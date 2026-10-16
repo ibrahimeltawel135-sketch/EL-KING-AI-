@@ -1,13 +1,14 @@
+
 /** One place for the values every screen uses, so they cannot drift apart. */
 export const theme = {
-  bg: '#191c22',
-  surface: '#22262e',
-  line: '#363d49',
-  text: '#e7ebf2',
-  textWeak: '#abb4c3',
-  textWeaker: '#929eb0',
-  accent: '#78a9ff',
-  mint: '#69d5b0',
-  warn: '#e8bb73',
-  danger: '#ff858d'
+  bg: '#08090B',
+  surface: '#151619',
+  line: '#302A1B',
+  text: '#F7F5EF',
+  textWeak: '#C4C0B5',
+  textWeaker: '#9A968C',
+  accent: '#D4AF37',
+  mint: '#77C99A',
+  warn: '#E7C766',
+  danger: '#FF7777'
 } as const;

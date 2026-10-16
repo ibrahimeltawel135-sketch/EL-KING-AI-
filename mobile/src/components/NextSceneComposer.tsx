@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Text, TextInput } from './AppText';
 import type { AiProjectDocument } from '@openvideo/shared/aiProjectDomain';
 import { approveNextSequentialScene, buildNextSequentialSceneRequest, discardNextSequentialScene, proposeNextSequentialScene } from '@openvideo/shared/sequentialProduction';
 import { parseWriterPromptText } from '@openvideo/shared/writerPipeline';
@@ -40,10 +41,10 @@ export function NextSceneComposer({ document, onSave, disabled, connectionsVersi
   };
   return <View style={styles.card}>
     <Text style={styles.title}>Scene {count} complete. What happens next?</Text>
-    <Text style={styles.text}>Plan just the next scene. Approve its five-second shots before video generation. Existing character identities and visual style stay locked. You can also assemble now.</Text>
+    <Text style={styles.text} translateText>Plan just the next scene. Approve its five-second shots before video generation. Existing character identities and visual style stay locked. You can also assemble now.</Text>
     {!pending && <>
-      <TextInput accessibilityLabel="Next scene brief" multiline placeholder="Describe what changes in the next scene…" placeholderTextColor={theme.textWeak} value={brief} onChangeText={setBrief} editable={!busy && !disabled} style={[styles.input, { minHeight: 100 }]} />
-      <Text style={styles.text}>Scene length</Text>
+      <TextInput accessibilityLabel="Next scene brief" multiline placeholder="Describe what changes in the next scene…" placeholderTextColor={theme.textWeak} value={brief} onChangeText={setBrief} editable={!busy && !disabled} style={[styles.input, { minHeight: 100 }]}  translatePlaceholder translateAccessibilityLabel/>
+      <Text style={styles.text} translateText>Scene length</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{[15, 30, 60, 120, 180].map(value => <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: seconds === value }} onPress={() => setSeconds(value)} style={press([styles.choice, seconds === value && { borderColor: theme.accent }])}><Text style={styles.text}>{value < 60 ? value + ' sec' : value / 60 + ' min'}</Text></Pressable>)}</View>
       <ModelSelect domain="writer" selectedId={modelId} connected={connected} onSelect={item => setModelId(item.id)} onConnectionChange={() => { void readProviderConnections().then(setConnected); }} />
       {action('Plan scene ' + (count + 1), () => {

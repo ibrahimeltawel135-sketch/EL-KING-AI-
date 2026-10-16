@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../components/AppText';
 
 import { estimateImageCost } from '@openvideo/shared/mediaGenerationPricing';
 import {
@@ -145,10 +146,10 @@ export function ImageScreen({
 
   return (
     <FormScreen topInset={topInset} keyboardOffset={keyboardOffset}>
-      <Text style={styles.h1}>Generate an image</Text>
-      <Text style={styles.sub}>Runs against your own provider account, through the shared adapters.</Text>
+      <Text style={styles.h1} translateText>Generate an image</Text>
+      <Text style={styles.sub} translateText>Runs against your own provider account, through the shared adapters.</Text>
 
-      <Text style={styles.label}>Model</Text>
+      <Text style={styles.label} translateText>Model</Text>
       <ModelSelect
         domain="image-generation"
         selectedId={modelId}
@@ -157,17 +158,13 @@ export function ImageScreen({
         onConnectionChange={refreshConnections}
       />
       {model?.providerId === 'google_gemini' && (
-        <Text style={styles.sessionNote}>
-          Signed-in Google Flow automation is desktop-only. Manual login or verification must be resolved on desktop; mobile continues to use the official Gemini API key.
-        </Text>
+        <Text style={styles.sessionNote} translateText>Signed-in Google Flow automation is desktop-only. Manual login or verification must be resolved on desktop; mobile continues to use the official Gemini API key.</Text>
       )}
       {model?.providerId === 'xai' && (
-        <Text style={styles.sessionNote}>
-          Signed-in Grok Imagine automation is desktop-only. Manual login or verification must be resolved on desktop; mobile uses supported official API-key routes only.
-        </Text>
+        <Text style={styles.sessionNote} translateText>Signed-in Grok Imagine automation is desktop-only. Manual login or verification must be resolved on desktop; mobile uses supported official API-key routes only.</Text>
       )}
 
-      <Text style={styles.label}>Aspect ratio</Text>
+      <Text style={styles.label} translateText>Aspect ratio</Text>
       <View style={styles.row}>
         {RATIOS.map((ratio) => (
           <Pressable
@@ -182,7 +179,7 @@ export function ImageScreen({
         ))}
       </View>
 
-      <Text style={styles.label}>Prompt</Text>
+      <Text style={styles.label} translateText>Prompt</Text>
       <TextInput
         ref={promptInput}
         onFocus={() => reveal(promptInput.current)}
@@ -193,7 +190,7 @@ export function ImageScreen({
         placeholderTextColor={theme.textWeaker}
         multiline
         accessibilityLabel="Image prompt"
-      />
+       translatePlaceholder translateAccessibilityLabel/>
 
       <Text style={styles.cost}>
         {cost.priced && cost.amountUsd !== undefined
@@ -207,7 +204,7 @@ export function ImageScreen({
         onPress={generate}
         style={press([styles.cta, (result.kind === 'running' || prompt.trim().length === 0) && styles.ctaOff])}
       >
-        <Text style={styles.ctaText}>{result.kind === 'running' ? 'Generating…' : 'Generate'}</Text>
+        <Text style={styles.ctaText} translateText>{result.kind === 'running' ? 'Generating…' : 'Generate'}</Text>
       </Pressable>
 
       <SpendPrompt

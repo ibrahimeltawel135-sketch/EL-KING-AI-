@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from './AppText';
 
 import { addCustomProvider, customCredentialKey } from '../lib/customProviders';
 import { writeSlot } from '../lib/credentials';
@@ -44,18 +45,16 @@ export function AddCustomProvider({ onAdded }: { readonly onAdded: () => void })
   if (!open) {
     return (
       <Pressable accessibilityRole="button" onPress={() => setOpen(true)} style={press(styles.opener)}>
-        <Text style={styles.openerText}>＋ Add a custom provider</Text>
+        <Text style={styles.openerText} translateText>＋ Add a custom provider</Text>
       </Pressable>
     );
   }
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Custom provider</Text>
-      <Text style={styles.blurb}>
-        Any endpoint that speaks the OpenAI chat-completions API — Alibaba, a gateway, or your own server. Chat only:
-        image and video providers each need their own adapter, so a URL alone cannot drive them.
-      </Text>
+      <Text style={styles.title} translateText>Custom provider</Text>
+      <Text style={styles.blurb} translateText>Any endpoint that speaks the OpenAI chat-completions API — Alibaba, a gateway, or your own server. Chat only:
+        image and video providers each need their own adapter, so a URL alone cannot drive them.</Text>
 
       <Field label="Name" value={label} onChange={setLabel} placeholder="Alibaba Qwen" />
       <Field
@@ -79,16 +78,14 @@ export function AddCustomProvider({ onAdded }: { readonly onAdded: () => void })
 
       <View style={styles.actions}>
         <Pressable accessibilityRole="button" onPress={() => void submit()} style={press(styles.save)}>
-          <Text style={styles.saveText}>Add</Text>
+          <Text style={styles.saveText} translateText>Add</Text>
         </Pressable>
         <Pressable accessibilityRole="button" onPress={() => setOpen(false)} style={press(styles.cancel)}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText} translateText>Cancel</Text>
         </Pressable>
       </View>
-      <Text style={styles.footnote}>
-        The base URL is the part before /chat/completions. The key is held in the device keystore, like every other
-        provider.
-      </Text>
+      <Text style={styles.footnote} translateText>The base URL is the part before /chat/completions. The key is held in the device keystore, like every other
+        provider.</Text>
     </View>
   );
 }
@@ -114,13 +111,14 @@ function Field({
   const input = useRef<TextInput>(null);
   return (
     <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={styles.fieldLabel} translateText>{label}</Text>
       <TextInput
         ref={input}
         onFocus={() => reveal(input.current)}
         style={[styles.input, multiline === true && styles.inputMulti]}
         value={value}
         onChangeText={onChange}
+        translatePlaceholder
         placeholder={placeholder}
         placeholderTextColor={theme.textWeaker}
         secureTextEntry={secure === true}
@@ -128,6 +126,7 @@ function Field({
         autoCorrect={false}
         autoCapitalize={autoCapitalize ?? 'sentences'}
         accessibilityLabel={label}
+        translateAccessibilityLabel
       />
     </View>
   );

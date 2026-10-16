@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../components/AppText';
 import { checkNarrationFit } from '@openvideo/shared/narrationTiming';
 import { narrationScriptFromCues, type NarrationPlan, type SubtitleCue } from '@openvideo/shared/narrationPlan';
 import { applySubtitleCues, createNarrationPlan, narrationFromApprovedWriter, narrationPlanMatchesWriter, updateNarrationPlan } from '@openvideo/shared/subtitleWorkflow';
@@ -105,13 +106,13 @@ function ProjectVoiceScreen({ topInset, keyboardOffset, targetSeconds, connectio
   };
   const action = (label: string, onPress: () => void, disabled = false) => <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={press([styles.button, disabled && styles.off])}><Text style={styles.buttonText}>{label}</Text></Pressable>;
   return <FormScreen topInset={topInset} keyboardOffset={keyboardOffset}>
-    <Text style={styles.h1}>Narration & Subtitles</Text><Text style={styles.sub}>Prepare voice text and timed captions together. Review and approve before either is used.</Text>
+    <Text style={styles.h1} translateText>Narration & Subtitles</Text><Text style={styles.sub} translateText>Prepare voice text and timed captions together. Review and approve before either is used.</Text>
     <View style={styles.card}>
-      <Text style={styles.label}>Automatic subtitles from audio or video</Text>
-      <Text style={styles.note}>Local whisper.cpp transcription runs on desktop because mobile cannot launch OpenScene's managed executable or FFmpeg worker. Generate there; this screen can review, approve, and apply the same saved transcript.</Text>
+      <Text style={styles.label} translateText>Automatic subtitles from audio or video</Text>
+      <Text style={styles.note} translateText>Local whisper.cpp transcription runs on desktop because mobile cannot launch EL KING AI's managed executable or FFmpeg worker. Generate there; this screen can review, approve, and apply the same saved transcript.</Text>
       {action('Transcribe on desktop', () => undefined, true)}
-      {transcriptSourceMissing && <Text style={styles.warn}>The transcript source asset is no longer in this project.</Text>}
-      {!transcriptSourceMissing && transcriptSourceNotPlaced && <Text style={styles.warn}>Place the transcript source asset on the timeline first. Trim, offset and speed will be mapped automatically.</Text>}
+      {transcriptSourceMissing && <Text style={styles.warn} translateText>The transcript source asset is no longer in this project.</Text>}
+      {!transcriptSourceMissing && transcriptSourceNotPlaced && <Text style={styles.warn} translateText>Place the transcript source asset on the timeline first. Trim, offset and speed will be mapped automatically.</Text>}
       {transcript !== null && <>
         <Text style={styles.note}>{transcript.modelName} · {transcript.language} · {transcript.cues.length} cue(s)</Text>
         {transcript.cues.map((cue, index) => <View key={cue.id} style={styles.card}><Text style={styles.label}>Transcript cue {index + 1}</Text><View style={styles.row}>
@@ -121,17 +122,17 @@ function ProjectVoiceScreen({ topInset, keyboardOffset, targetSeconds, connectio
         <View style={styles.row}>{action('Save transcript', () => saveTranscript(false))}{action('Approve transcript', () => saveTranscript(true))}{action('Apply transcript captions', applyTranscript, transcript.status !== 'approved' || transcriptDirty || transcriptSourceMissing || transcriptSourceNotPlaced)}</View>
       </>}
     </View>
-    <Text style={styles.label}>Voice model</Text><ModelSelect domain="voice-generation" selectedId={modelId} connected={connected} onSelect={(next) => setModelId(next.id)} onConnectionChange={refresh} />
-    <Text style={styles.label}>Voice</Text><View style={styles.row}>{choices.length ? choices.map((voice) => <View key={voice.id}>{action(`${voiceId === voice.id ? '✓ ' : ''}${voice.label}`, () => setVoiceId(voice.id))}</View>) : <Text style={styles.note}>{usesRuntimeVoiceCatalog(model?.providerId ?? '') ? `VieNeu preset voices are discovered by the desktop app from its local server${voiceId ? `; saved voice: ${voiceId}` : ''}.` : 'Provider default voice'}</Text>}</View>
+    <Text style={styles.label} translateText>Voice model</Text><ModelSelect domain="voice-generation" selectedId={modelId} connected={connected} onSelect={(next) => setModelId(next.id)} onConnectionChange={refresh} />
+    <Text style={styles.label} translateText>Voice</Text><View style={styles.row}>{choices.length ? choices.map((voice) => <View key={voice.id}>{action(`${voiceId === voice.id ? '✓ ' : ''}${voice.label}`, () => setVoiceId(voice.id))}</View>) : <Text style={styles.note}>{usesRuntimeVoiceCatalog(model?.providerId ?? '') ? `VieNeu preset voices are discovered by the desktop app from its local server${voiceId ? `; saved voice: ${voiceId}` : ''}.` : 'Provider default voice'}</Text>}</View>
     {writer && action(`Load approved Writer dialogue (${writer.cues.length} cues)`, () => create(true))}
-    <Text style={styles.label}>Narration script</Text><TextInput ref={input} onFocus={() => reveal(input.current)} multiline value={script} onChangeText={updateScript} style={[styles.input, styles.script]} placeholder="Write or load narration…" placeholderTextColor={theme.textWeaker} />
+    <Text style={styles.label} translateText>Narration script</Text><TextInput ref={input} onFocus={() => reveal(input.current)} multiline value={script} onChangeText={updateScript} style={[styles.input, styles.script]} placeholder="Write or load narration…" placeholderTextColor={theme.textWeaker}  translatePlaceholder/>
     {action('Auto-split subtitles from script', () => create(false), !script.trim())}
     {fit && <View style={styles.card}><Text style={fit.verdict === 'fits' ? styles.ok : styles.warn}>{fit.verdict}</Text><Text style={styles.note}>{fit.advice}</Text></View>}
-    {stale && <Text style={styles.warn}>Writer dialogue changed. Reload it, or rebuild from your edited script.</Text>}
+    {stale && <Text style={styles.warn} translateText>Writer dialogue changed. Reload it, or rebuild from your edited script.</Text>}
     <View style={styles.card}>
       <Text style={styles.label}>{deliveryCapabilities.title}</Text><Text style={styles.note}>{deliveryCapabilities.guidance}</Text>
-      <Text style={styles.label}>Performance script (voice only)</Text><TextInput multiline value={delivery.performanceScript} onChangeText={(performanceScript) => updateDelivery({ performanceScript })} style={[styles.input, styles.script]} placeholder="Add supported emotion or pause cues here…" placeholderTextColor={theme.textWeaker} />
-      <Text style={styles.note}>Performance cues stay out of captions. Add each cue immediately before the words it should affect.</Text>
+      <Text style={styles.label} translateText>Performance script (voice only)</Text><TextInput multiline value={delivery.performanceScript} onChangeText={(performanceScript) => updateDelivery({ performanceScript })} style={[styles.input, styles.script]} placeholder="Add supported emotion or pause cues here…" placeholderTextColor={theme.textWeaker}  translatePlaceholder/>
+      <Text style={styles.note} translateText>Performance cues stay out of captions. Add each cue immediately before the words it should affect.</Text>
       <View style={styles.row}>{deliveryCapabilities.cues.map((cue) => <View key={cue.token}>{action(cue.label, () => appendDeliveryCue(cue.token))}</View>)}</View>
       {deliveryCapabilities.supportsStability && <><Text style={styles.label}>Stability: {delivery.stability.toFixed(2)}</Text><View style={styles.row}>{action('Expressive 0.30', () => updateDelivery({ stability: 0.3 }))}{action('Balanced 0.50', () => updateDelivery({ stability: 0.5 }))}{action('Consistent 0.75', () => updateDelivery({ stability: 0.75 }))}</View></>}
       {deliveryCapabilities.supportsAdvancedVoiceSettings && <>
@@ -149,10 +150,10 @@ function ProjectVoiceScreen({ topInset, keyboardOffset, targetSeconds, connectio
       updateScript(narrationScriptFromCues(next));
       return next;
     })} style={styles.input} /></View>)}
-    <Text style={styles.note}>Timing follows Writer shots or is distributed across the script. It is not word-level audio alignment; listen and fine-tune after creating voice on desktop.</Text>
+    <Text style={styles.note} translateText>Timing follows Writer shots or is distributed across the script. It is not word-level audio alignment; listen and fine-tune after creating voice on desktop.</Text>
     <View style={styles.row}>{action('Save draft', () => save(false), !cues.length)}{action('Approve', () => save(true), !cues.length)}{action('Apply captions', apply, saved?.status !== 'approved' || dirty || stale)}</View>
     {!!message && <Text style={styles.message}>{message}</Text>}
-    <Text style={styles.note}>Mobile can edit, approve, and apply the same narration plan. Speech synthesis stays disabled until its binary result transport is implemented; Qwen TTS needs the desktop-local wrapper and VieNeu-TTS needs its desktop-local server. This screen cannot charge any provider.</Text>
+    <Text style={styles.note} translateText>Mobile can edit, approve, and apply the same narration plan. Speech synthesis stays disabled until its binary result transport is implemented; Qwen TTS needs the desktop-local wrapper and VieNeu-TTS needs its desktop-local server. This screen cannot charge any provider.</Text>
   </FormScreen>;
 }
 

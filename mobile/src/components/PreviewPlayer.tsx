@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { Text } from './AppText';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 import { theme } from '../lib/theme';
@@ -182,7 +183,7 @@ export function PreviewPlayer({
         // A gap is black on export, so it is black here too rather than showing
         // the last frame that happened to be decoded.
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No clip under the playhead</Text>
+          <Text style={styles.emptyText} translateText>No clip under the playhead</Text>
         </View>
       ) : (
         <VideoView style={[styles.video, composited]} player={player} contentFit="contain" nativeControls={false} />

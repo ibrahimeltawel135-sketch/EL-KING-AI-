@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from './AppText';
 import type { AiProjectDocument } from '@openvideo/shared/aiProjectDomain';
 import { appendProductionMemory, buildProductionMemory, searchProductionMemory } from '@openvideo/shared/productionMemory';
 import { theme } from '../lib/theme';
@@ -16,15 +17,15 @@ export function ProductionMemoryPanel({ projectId, document, prompt, onChange, d
   const results = useMemo(() => searchProductionMemory(index, projectId, query), [index, projectId, query]);
   return <View style={styles.panel}>
     <Pressable accessibilityRole="button" accessibilityState={{ expanded: open }} style={press(styles.button)} onPress={() => setOpen(value => !value)}>
-      <Text style={styles.text}>Project memory · local search</Text>
+      <Text style={styles.text} translateText>Project memory · local search</Text>
     </Pressable>
     {open && <>
-      <Text style={styles.text}>Search stays on this device. Added references are sent to the selected provider when you generate. Review copied text again if its source changes.</Text>
+      <Text style={styles.text} translateText>Search stays on this device. Added references are sent to the selected provider when you generate. Review copied text again if its source changes.</Text>
       <TextInput accessibilityLabel="Search project memory" placeholder="Character name, dialogue or scene…" placeholderTextColor={theme.textWeaker}
-        style={styles.input} value={query} maxLength={512} onChangeText={setQuery} />
+        style={styles.input} value={query} maxLength={512} onChangeText={setQuery}  translatePlaceholder translateAccessibilityLabel/>
       <Text style={styles.text}>{index.entries.length} excerpts · up to 5 matches · lexical, not semantic search.</Text>
-      {index.truncated && <Text style={styles.text}>Limit reached: first 256 excerpts, up to 12,000 characters per source.</Text>}
-      {query.trim() !== '' && results.length === 0 && <Text style={styles.text}>No matches. Approve the script before searching production shots.</Text>}
+      {index.truncated && <Text style={styles.text} translateText>Limit reached: first 256 excerpts, up to 12,000 characters per source.</Text>}
+      {query.trim() !== '' && results.length === 0 && <Text style={styles.text} translateText>No matches. Approve the script before searching production shots.</Text>}
       {results.map(entry => <View key={entry.sourceId} style={styles.panel}>
         <Text style={styles.text}>{entry.title} · {entry.sourceId}</Text>
         <Text selectable style={styles.text}>{entry.text}</Text>
@@ -32,7 +33,7 @@ export function ProductionMemoryPanel({ projectId, document, prompt, onChange, d
           const result = appendProductionMemory(prompt, entry, projectId);
           if (result.ok) { onChange(result.prompt); setMessage('Copied to prompt. Review before generating; edit the prompt to remove.'); }
           else setMessage(result.reason);
-        }}><Text style={styles.text}>Add reference to prompt</Text></Pressable>
+        }}><Text style={styles.text} translateText>Add reference to prompt</Text></Pressable>
       </View>)}
       <Text accessibilityLiveRegion="polite" style={styles.text}>{message}</Text>
     </>}

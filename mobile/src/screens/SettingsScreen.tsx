@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { useLocale } from "../lib/locale";
+import { Text, TextInput } from '../components/AppText';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -57,6 +60,7 @@ function chatRows(): readonly Row[] {
 }
 
 export function SettingsScreen({ topInset }: { readonly topInset: number }) {
+  const { locale, setLocale } = useLocale();
   const [connected, setConnected] = useState<Readonly<Record<string, boolean>>>({});
   const permissions = useSpendPermissions();
   // What generation has cost this month, and the ceiling on it. Read once on
@@ -110,11 +114,33 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
 
   return (
     <FormScreen topInset={topInset}>
-      <Text style={styles.h1}>Providers</Text>
-      <Text style={styles.sub}>
-        Everything the app generates runs against your own accounts. Keys are held in the device keystore — Keychain on
-        iOS, Keystore on Android — never in the app bundle or in plain storage, and never read back for display.
-      </Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle} translateText>Language</Text>
+        <Text style={styles.sectionBlurb} translateText>Language preference is saved on this device.</Text>
+        <View style={styles.languageChoices}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: locale === 'ar' }}
+            accessibilityLabel="العربية"
+            onPress={() => setLocale('ar')}
+            style={press([styles.languageChoice, locale === 'ar' && styles.languageChoiceActive])}
+          >
+            <Text style={[styles.languageChoiceText, locale === 'ar' && styles.languageChoiceTextActive]} translateText>العربية</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: locale === 'en' }}
+            accessibilityLabel="English"
+            onPress={() => setLocale('en')}
+            style={press([styles.languageChoice, locale === 'en' && styles.languageChoiceActive])}
+          >
+            <Text style={[styles.languageChoiceText, locale === 'en' && styles.languageChoiceTextActive]} translateText>English</Text>
+          </Pressable>
+        </View>
+      </View>
+      <Text style={styles.h1} translateText>Providers</Text>
+      <Text style={styles.sub} translateText>Everything the app generates runs against your own accounts. Keys are held in the device keystore — Keychain on
+        iOS, Keystore on Android — never in the app bundle or in plain storage, and never read back for display.</Text>
 
       {MEDIA_SECTIONS.map((section) => (
         <View key={section.domain} style={styles.section}>
@@ -135,8 +161,8 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
       ))}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Assistant</Text>
-        <Text style={styles.sectionBlurb}>Models the AI tab can talk to and call tools with.</Text>
+        <Text style={styles.sectionTitle} translateText>Assistant</Text>
+        <Text style={styles.sectionBlurb} translateText>Models the AI tab can talk to and call tools with.</Text>
         {customProviders.map((provider) => (
           <View key={provider.id} style={styles.customRow}>
             <ProviderConnect
@@ -156,7 +182,7 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
               }}
               style={press(styles.removeCustom)}
             >
-              <Text style={styles.removeCustomText}>Remove this provider</Text>
+              <Text style={styles.removeCustomText} translateText>Remove this provider</Text>
             </Pressable>
           </View>
         ))}
@@ -176,29 +202,25 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Browser sessions</Text>
-        <Text style={styles.sectionBlurb}>
-          Gemini and Grok browser-session sign-in is desktop-only because it needs an isolated Electron profile and OS
-          safeStorage. Mobile keeps this path disabled; use provider API keys stored in Keychain or Keystore here.
-        </Text>
+        <Text style={styles.sectionTitle} translateText>Browser sessions</Text>
+        <Text style={styles.sectionBlurb} translateText>Gemini and Grok browser-session sign-in is desktop-only because it needs an isolated Electron profile and OS
+          safeStorage. Mobile keeps this path disabled; use provider API keys stored in Keychain or Keystore here.</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Spending permissions</Text>
-        <Text style={styles.sectionBlurb}>
-          Generation charges your own provider account, so each kind asks before the first one. “Always” is remembered
+        <Text style={styles.sectionTitle} translateText>Spending permissions</Text>
+        <Text style={styles.sectionBlurb} translateText>Generation charges your own provider account, so each kind asks before the first one. “Always” is remembered
           per kind — allowing every image is a different decision from allowing every video, and they do not cost the
-          same.
-        </Text>
+          same.</Text>
         {SPEND_FEATURES.map((feature) => {
           const standing = permissions.standingFor(feature);
           return (
             <View key={feature} style={styles.permRow}>
-              <Text style={styles.permLabel}>{feature.replace('-generation', '')}</Text>
-              <Text style={styles.permValue}>{standing === null ? 'asks each time' : standing}</Text>
+              <Text style={styles.permLabel} translateText>{feature.replace('-generation', '')}</Text>
+              <Text style={styles.permValue} translateText>{standing === null ? 'asks each time' : standing}</Text>
               {standing !== null && (
                 <Pressable accessibilityRole="button" onPress={() => permissions.forget(feature)} style={press(styles.permReset)}>
-                  <Text style={styles.permResetText}>Reset</Text>
+                  <Text style={styles.permResetText} translateText>Reset</Text>
                 </Pressable>
               )}
             </View>
@@ -207,7 +229,7 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Monthly limit</Text>
+        <Text style={styles.sectionTitle} translateText>Monthly limit</Text>
         <Text style={styles.sectionBlurb}>
           {describeSpend(spend.total, spend.capUsd)} A job that would take the month past the limit is refused before
           it reaches a provider. Leave it empty for no limit.
@@ -221,9 +243,9 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
             placeholderTextColor={theme.textWeak}
             keyboardType="decimal-pad"
             accessibilityLabel="Monthly spending limit in dollars"
-          />
+           translatePlaceholder translateAccessibilityLabel/>
           <Pressable accessibilityRole="button" onPress={saveCap} style={press(styles.permReset)}>
-            <Text style={styles.permResetText}>Save</Text>
+            <Text style={styles.permResetText} translateText>Save</Text>
           </Pressable>
         </View>
         {capError.length > 0 && <Text style={styles.capError}>{capError}</Text>}
@@ -239,12 +261,10 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
         writes or edits is in them.
       */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Usage reporting</Text>
-        <Text style={styles.sectionBlurb}>
-          Anonymous counts — how often an export runs or finishes, and which screens get used — sent to the developer’s own
+        <Text style={styles.sectionTitle} translateText>Usage reporting</Text>
+        <Text style={styles.sectionBlurb} translateText>Anonymous counts — how often an export runs or finishes, and which screens get used — sent to the developer’s own
           server rather than to a third party. Never your prompts, projects, media, file names, or keys, and there is no
-          account to attach any of it to.
-        </Text>
+          account to attach any of it to.</Text>
         <Pressable
           accessibilityRole="switch"
           accessibilityState={{ checked: analytics.enabled }}
@@ -252,8 +272,8 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           onPress={() => analytics.set(!analytics.enabled)}
           style={press(styles.permRow)}
         >
-          <Text style={styles.switchLabel}>Send anonymous usage counts</Text>
-          <Text style={[styles.permValue, analytics.enabled && styles.aboutLink]}>{analytics.enabled ? 'on' : 'off'}</Text>
+          <Text style={styles.switchLabel} translateText>Send anonymous usage counts</Text>
+          <Text style={[styles.permValue, analytics.enabled && styles.aboutLink]} translateText>{analytics.enabled ? 'on' : 'off'}</Text>
         </Pressable>
       </View>
 
@@ -274,12 +294,10 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
       */}
       {__DEV__ && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ad mediation (development only)</Text>
-          <Text style={styles.sectionBlurb}>
-            LevelPlay’s Test Suite. Shows which of the five networks — ironSource, Unity Ads, AppLovin, Meta, Pangle —
+          <Text style={styles.sectionTitle} translateText>Ad mediation (development only)</Text>
+          <Text style={styles.sectionBlurb} translateText>LevelPlay’s Test Suite. Shows which of the five networks — ironSource, Unity Ads, AppLovin, Meta, Pangle —
             actually made it into this binary, and loads a test ad for each placement. Development builds request no
-            live ad, so this is the only place an ad appears before a store build.
-          </Text>
+            live ad, so this is the only place an ad appears before a store build.</Text>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Open the LevelPlay test suite"
@@ -289,8 +307,8 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
             }}
             style={press(styles.aboutRow)}
           >
-            <Text style={styles.aboutLabel}>Test suite</Text>
-            <Text style={[styles.aboutValue, testSuite === null && styles.aboutLink]}>
+            <Text style={styles.aboutLabel} translateText>Test suite</Text>
+            <Text style={[styles.aboutValue, testSuite === null && styles.aboutLink]} translateText>
               {testSuite === null
                 ? 'Open'
                 : testSuite === 'opening'
@@ -314,7 +332,7 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
         which serving ads also requires.
       */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
+        <Text style={styles.sectionTitle} translateText>About</Text>
         {/*
           What pays for this, said before anyone has to work it out.
 
@@ -325,13 +343,11 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           app never mentions them is a mismatch a reviewer can see. It is one
           sentence, and it is the honest one.
         */}
-        <Text style={styles.sectionBlurb}>
-          OpenScene is free. Ads pay for it — a banner here, and a full-screen ad after an export finishes, mediated by
+        <Text style={styles.sectionBlurb} translateText>EL KING AI is free. Ads pay for it — a banner here, and a full-screen ad after an export finishes, mediated by
           Unity LevelPlay. There is no paid tier, nothing is unlocked by watching one, and the desktop app has no ads at
-          all.
-        </Text>
+          all.</Text>
         <View style={styles.aboutRow}>
-          <Text style={styles.aboutLabel}>Developer</Text>
+          <Text style={styles.aboutLabel} translateText>Developer</Text>
           <Text style={styles.aboutValue}>{DEVELOPER_NAME}</Text>
         </View>
         <Pressable
@@ -340,7 +356,7 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           onPress={() => void WebBrowser.openBrowserAsync(`https://${DEVELOPER_SITE}`)}
           style={press(styles.aboutRow)}
         >
-          <Text style={styles.aboutLabel}>Site</Text>
+          <Text style={styles.aboutLabel} translateText>Site</Text>
           <Text style={[styles.aboutValue, styles.aboutLink]}>{DEVELOPER_SITE}</Text>
         </Pressable>
         <Pressable
@@ -349,7 +365,7 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           onPress={() => void Linking.openURL(`mailto:${CONTACT_EMAIL}`)}
           style={press(styles.aboutRow)}
         >
-          <Text style={styles.aboutLabel}>Contact</Text>
+          <Text style={styles.aboutLabel} translateText>Contact</Text>
           <Text style={[styles.aboutValue, styles.aboutLink]}>{CONTACT_EMAIL}</Text>
         </Pressable>
         <Pressable
@@ -358,8 +374,8 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           onPress={() => void WebBrowser.openBrowserAsync(PRIVACY_URL)}
           style={press(styles.aboutRow)}
         >
-          <Text style={styles.aboutLabel}>Privacy policy</Text>
-          <Text style={[styles.aboutValue, styles.aboutLink]}>Open</Text>
+          <Text style={styles.aboutLabel} translateText>Privacy policy</Text>
+          <Text style={[styles.aboutValue, styles.aboutLink]} translateText>Open</Text>
         </Pressable>
         <Pressable
           accessibilityRole="link"
@@ -367,11 +383,11 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
           onPress={() => void WebBrowser.openBrowserAsync(TERMS_URL)}
           style={press(styles.aboutRow)}
         >
-          <Text style={styles.aboutLabel}>Terms of service</Text>
-          <Text style={[styles.aboutValue, styles.aboutLink]}>Open</Text>
+          <Text style={styles.aboutLabel} translateText>Terms of service</Text>
+          <Text style={[styles.aboutValue, styles.aboutLink]} translateText>Open</Text>
         </Pressable>
         <View style={styles.aboutRow}>
-          <Text style={styles.aboutLabel}>Version</Text>
+          <Text style={styles.aboutLabel} translateText>Version</Text>
           <Text style={styles.aboutValue}>{APP_VERSION}</Text>
         </View>
       </View>
@@ -380,6 +396,11 @@ export function SettingsScreen({ topInset }: { readonly topInset: number }) {
 }
 
 const styles = StyleSheet.create({
+  languageChoices: { flexDirection: 'row', gap: 8 },
+  languageChoice: { minHeight: MIN_TAP, justifyContent: 'center', paddingHorizontal: 20, borderRadius: 9, borderWidth: 1, borderColor: theme.line, backgroundColor: theme.surface },
+  languageChoiceActive: { borderColor: theme.accent, backgroundColor: `${theme.accent}22` },
+  languageChoiceText: { color: theme.textWeak, fontSize: 14, fontWeight: '600' },
+  languageChoiceTextActive: { color: theme.accent },
   aboutRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: MIN_TAP, borderBottomWidth: 1, borderBottomColor: theme.line },
   aboutLabel: { flex: 1, color: theme.text, fontSize: 14 },
   aboutValue: { color: theme.textWeak, fontSize: 13 },

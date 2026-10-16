@@ -1,6 +1,7 @@
 import { pipelineBaseRequest } from '@openvideo/shared/writerPipeline';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Text, TextInput } from '../components/AppText';
 import { ProductionNavigator } from '../components/ProductionNavigator';
 import { ProductionPlanComposer } from '../components/ProductionPlanComposer';
 import { NextSceneComposer } from '../components/NextSceneComposer';
@@ -470,11 +471,11 @@ export function PlanScreen({
   return (
     <FormScreen topInset={topInset} keyboardOffset={keyboardOffset}>
       {productionRows.length > 0 && <View style={styles.filmModelControls}>
-        <Text style={styles.quickClipTitle}>Film shot model</Text>
-        <Text style={styles.body}>This model and framing are used for scene and shot generation below. Each run still asks for cost approval.</Text>
+        <Text style={styles.quickClipTitle} translateText>Film shot model</Text>
+        <Text style={styles.body} translateText>This model and framing are used for scene and shot generation below. Each run still asks for cost approval.</Text>
         <ModelSelect domain="video-generation" selectedId={modelId} connected={connected}
           onSelect={next => setPlan(() => setModelId(next.id))} onConnectionChange={refreshConnections} />
-        <Text style={styles.label}>Frame ratio</Text>
+        <Text style={styles.label} translateText>Frame ratio</Text>
         <View style={styles.row}>{aspectRatioOptions.map(ratio => <Chip key={ratio} label={ratio} selected={ratio === effectiveAspectRatio} onPress={() => setPlan(() => setAspectRatio(ratio))} />)}</View>
       </View>}
       {projectId && activeProject && productionRows.length === 0 && <ProductionPlanComposer key={'plan-' + projectId} document={activeProject.ai} disabled={running || asking || redoing !== null} connectionsVersion={connectionsVersion} onSave={async ai => {
@@ -517,14 +518,14 @@ export function PlanScreen({
         }} />}
       {productionRows.length === 0 && <Pressable accessibilityRole="button" accessibilityState={{ expanded: showQuickClip }} onPress={() => setShowQuickClip(value => !value)} style={press(styles.quickClipToggle)}>
         <Text style={styles.quickClipTitle}>{showQuickClip ? 'Hide quick clip tools' : 'Quick clip · separate from this film'}</Text>
-        <Text style={styles.footnote}>For a one-off video. The screenplay and scene board above are the film production flow.</Text>
+        <Text style={styles.footnote} translateText>For a one-off video. The screenplay and scene board above are the film production flow.</Text>
       </Pressable>}
       {productionRows.length === 0 && showQuickClip && <>
-      <Text style={styles.h1}>Quick clip</Text>
-      <Text style={styles.sub}>Shot lengths and prices come from the same modules the desktop app uses.</Text>
-      <Text style={styles.body}>Signed-in Google Flow video automation is desktop-only. Grok Imagine browser automation is desktop-only too. Login, CAPTCHA, verification, and account-limit states must be resolved on desktop; mobile continues to use supported official API-key routes.</Text>
+      <Text style={styles.h1} translateText>Quick clip</Text>
+      <Text style={styles.sub} translateText>Shot lengths and prices come from the same modules the desktop app uses.</Text>
+      <Text style={styles.body} translateText>Signed-in Google Flow video automation is desktop-only. Grok Imagine browser automation is desktop-only too. Login, CAPTCHA, verification, and account-limit states must be resolved on desktop; mobile continues to use supported official API-key routes.</Text>
 
-      <Text style={styles.label}>Model</Text>
+      <Text style={styles.label} translateText>Model</Text>
       <ModelSelect
         domain="video-generation"
         selectedId={modelId}
@@ -533,7 +534,7 @@ export function PlanScreen({
         onConnectionChange={refreshConnections}
       />
 
-      <Text style={styles.label}>Input mode</Text>
+      <Text style={styles.label} translateText>Input mode</Text>
       <View style={styles.row}>
         {INPUT_MODES.map((mode) => (
           <Chip key={mode.id} label={mode.label} selected={operation === mode.id}
@@ -544,17 +545,17 @@ export function PlanScreen({
             })} />
         ))}
       </View>
-      <Text style={styles.body}>Motion Control remains visible here but runs only in the desktop app, where OpenScene can safely read project video files and reach your user-managed ComfyUI worker.</Text>
+      <Text style={styles.body} translateText>Motion Control remains visible here but runs only in the desktop app, where EL KING AI can safely read project video files and reach your user-managed ComfyUI worker.</Text>
       {(operation === 'start_end' || operation === 'reference_to_video') && totalSeconds !== 8 && (
-        <Text style={styles.warn}>Choose 8s for this manual advanced-input render. It runs as one reviewed shot.</Text>
+        <Text style={styles.warn} translateText>Choose 8s for this manual advanced-input render. It runs as one reviewed shot.</Text>
       )}
 
       {(operation === 'image_to_video' || operation === 'start_end') && <View>
-        <Text style={styles.label}>First frame</Text>
+        <Text style={styles.label} translateText>First frame</Text>
         <ReferenceRow value={firstFrame} empty="Required before generation." onPick={() => void pickReference('first')} onRemove={() => setFirstFrame(null)} />
       </View>}
       {operation === 'start_end' && <View>
-        <Text style={styles.label}>Last frame</Text>
+        <Text style={styles.label} translateText>Last frame</Text>
         <ReferenceRow value={lastFrame} empty="Required. Veo creates the movement between both frames." onPick={() => void pickReference('last')} onRemove={() => setLastFrame(null)} />
       </View>}
       {operation === 'reference_to_video' && <View>
@@ -566,7 +567,7 @@ export function PlanScreen({
           onPick={() => void pickReference('asset')} onRemove={() => undefined} />}
       </View>}
 
-      <Text style={styles.label}>Length</Text>
+      <Text style={styles.label} translateText>Length</Text>
       <View style={styles.row}>
         {LENGTHS.map((seconds) => (
           <Chip
@@ -578,7 +579,7 @@ export function PlanScreen({
         ))}
       </View>
 
-      <Text style={styles.label}>Aspect ratio</Text>
+      <Text style={styles.label} translateText>Aspect ratio</Text>
       <View style={styles.row}>
         {aspectRatioOptions.map((ratio) => (
           <Chip
@@ -592,7 +593,7 @@ export function PlanScreen({
 
       {plan.shots.length > 1 && (
         <>
-          <Text style={styles.label}>Continuity</Text>
+          <Text style={styles.label} translateText>Continuity</Text>
           <Pressable
             accessibilityRole="switch"
             accessibilityState={{ checked: continuity && continuityPossible }}
@@ -601,7 +602,7 @@ export function PlanScreen({
             style={press([styles.toggle, !continuityPossible && styles.toggleOff])}
           >
             <View style={[styles.box, continuity && continuityPossible && styles.boxOn]} />
-            <Text style={styles.toggleText}>Start each shot from the last frame of the one before</Text>
+            <Text style={styles.toggleText} translateText>Start each shot from the last frame of the one before</Text>
           </Pressable>
           {!continuityPossible && (
             <Text style={styles.body}>
@@ -615,7 +616,7 @@ export function PlanScreen({
         </>
       )}
 
-      <Text style={styles.label}>Scenario · carried by every shot</Text>
+      <Text style={styles.label} translateText>Scenario · carried by every shot</Text>
       {projectId !== null && activeProject !== null && <ProductionMemoryPanel key={projectId}
         projectId={projectId} document={activeProject.ai} prompt={prompt}
         onChange={value => setPlan(() => setPrompt(value))} disabled={running || asking || redoing !== null} />}
@@ -624,23 +625,23 @@ export function PlanScreen({
         <Text style={styles.redoText}>Saved videos & prompts ({activeProject?.ai.videoHistory?.length ?? 0})</Text>
       </Pressable>
       {historyOpen && <>
-        <Text style={styles.body}>Prepare regeneration loads the saved prompt only, without spending. Reselect model, duration, operation and reference media before generating a new candidate. Original videos are kept.</Text>
+        <Text style={styles.body} translateText>Prepare regeneration loads the saved prompt only, without spending. Reselect model, duration, operation and reference media before generating a new candidate. Original videos are kept.</Text>
         {activeProject?.ai.videoHistory?.slice(-historyCount).reverse().map(recipe => {
           const asset = activeProject.assets.find(item => item.id === recipe.assetId);
           return <View key={recipe.id}>
             <Text style={styles.label}>{recipe.modelId} · {recipe.durationSeconds}s · {recipe.aspectRatio} · {recipe.operation}</Text>
-            {asset !== undefined && projectId !== null ? <CandidateVideo active={active} projectId={projectId} asset={asset} /> : <Text style={styles.body}>Media removed. Prompt retained.</Text>}
+            {asset !== undefined && projectId !== null ? <CandidateVideo active={active} projectId={projectId} asset={asset} /> : <Text style={styles.body} translateText>Media removed. Prompt retained.</Text>}
             <Text selectable style={styles.body}>{recipe.prompt}</Text>
             <Pressable accessibilityRole="button" disabled={running || redoing !== null || asking} style={press(styles.redo)}
               onPress={() => {
                 setPlan(() => { setPrompt(recipe.prompt); setRecipeParentId(recipe.id); setDescriptions({}); });
                 setFirstFrame(null); setLastFrame(null); setAssetReferences([]);
                 setWriterMessage('Prompt loaded, not generated. Check model, length, operation and reference media before approving a new generation.');
-              }}><Text style={styles.redoText}>Prepare regeneration</Text></Pressable>
+              }}><Text style={styles.redoText} translateText>Prepare regeneration</Text></Pressable>
           </View>;
         })}
         {historyCount < (activeProject?.ai.videoHistory?.length ?? 0) && <Pressable accessibilityRole="button" style={press(styles.redo)} onPress={() => setHistoryCount(value => value + 20)}>
-          <Text style={styles.redoText}>Show older videos</Text>
+          <Text style={styles.redoText} translateText>Show older videos</Text>
         </Pressable>}
       </>}
       <TextInput
@@ -653,7 +654,7 @@ export function PlanScreen({
         placeholderTextColor={theme.textWeaker}
         multiline
         accessibilityLabel="Video prompt"
-      />
+       translatePlaceholder translateAccessibilityLabel/>
 
       <Text style={styles.label}>
         {plan.shots.length} shot{plan.shots.length === 1 ? '' : 's'} · accepts{' '}
@@ -708,7 +709,7 @@ export function PlanScreen({
 
             {take !== undefined && (
               <View style={styles.reviewCard}>
-                <Text style={styles.label}>Continuity review</Text>
+                <Text style={styles.label} translateText>Continuity review</Text>
                 {candidateAsset !== undefined && projectId !== null && <CandidateVideo active={active} key={candidateAsset.id} projectId={projectId} asset={candidateAsset} />}
                 {CONTINUITY_REVIEW_FIELDS.map((field) => (
                   <View key={field}>
@@ -731,7 +732,7 @@ export function PlanScreen({
                   placeholderTextColor={theme.textWeaker}
                   multiline
                   accessibilityLabel={`Review notes for shot ${shot.index}`}
-                />
+                 translatePlaceholder/>
                 <View style={styles.row}>
                   <Pressable accessibilityRole="button" disabled={take.decision === 'approved'}
                     onPress={() => approveTake(shot.index)}
@@ -741,7 +742,7 @@ export function PlanScreen({
                   <Pressable accessibilityRole="button" disabled={take.decision === 'rejected'}
                     onPress={() => setTakes((current) => ({ ...current, [shot.index]: { ...take, decision: 'rejected' } }))}
                     style={press([styles.redo, take.decision === 'rejected' && styles.approveOff])}>
-                    <Text style={styles.redoText}>Reject candidate</Text>
+                    <Text style={styles.redoText} translateText>Reject candidate</Text>
                   </Pressable>
                 </View>
               </View>
@@ -761,14 +762,14 @@ export function PlanScreen({
                   placeholderTextColor={theme.textWeaker}
                   multiline
                   accessibilityLabel={`What to change about shot ${shot.index}`}
-                />
+                 translatePlaceholder/>
                 <Pressable
                   accessibilityRole="button"
                   disabled={note.trim().length === 0}
                   onPress={() => void redoShot(shot.index, note)}
                   style={press([styles.approve, note.trim().length === 0 && styles.approveOff])}
                 >
-                  <Text style={styles.approveText}>Generate this shot again</Text>
+                  <Text style={styles.approveText} translateText>Generate this shot again</Text>
                 </Pressable>
               </View>
             )}
@@ -790,7 +791,7 @@ export function PlanScreen({
         </Text>
       )}
 
-      <Text style={styles.label}>Repeat in every shot prompt</Text>
+      <Text style={styles.label} translateText>Repeat in every shot prompt</Text>
       <Text style={styles.body}>
         {CONTINUITY_KEYS.join(' · ')} — each shot is rendered blind, so anything that must stay the same has to be
         restated rather than referenced.
@@ -807,16 +808,14 @@ export function PlanScreen({
             {running ? 'Generating…' : `Generate ${plan.shots.length} shot${plan.shots.length === 1 ? '' : 's'}`}
           </Text>
         </Pressable>
-        {projectId === null && <Text style={styles.footnote}>Open a project first — generated shots are saved into it.</Text>}
+        {projectId === null && <Text style={styles.footnote} translateText>Open a project first — generated shots are saved into it.</Text>}
         {projectId !== null && connected[model?.providerId ?? ''] !== true && (
           <Text style={styles.footnote}>{model?.providerLabel} is not connected. Add its key with ＋ above.</Text>
         )}
         {shotStates.some((state) => state.kind === 'done') && (
-          <Text style={styles.footnote}>
-            Finished candidates are saved in the project library. Review each one above; only an approved take changes the timeline.
-          </Text>
+          <Text style={styles.footnote} translateText>Finished candidates are saved in the project library. Review each one above; only an approved take changes the timeline.</Text>
         )}
-        <Text style={styles.footnote}>If the phone closes during a provider request, it is never submitted again automatically. Only a returned result saved into the project is treated as completed.</Text>
+        <Text style={styles.footnote} translateText>If the phone closes during a provider request, it is never submitted again automatically. Only a returned result saved into the project is treated as completed.</Text>
       </View>
 
       </>}

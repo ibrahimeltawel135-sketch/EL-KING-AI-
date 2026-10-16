@@ -1,6 +1,7 @@
 import { pipelineBaseRequest } from '@openvideo/shared/writerPipeline';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Text } from './AppText';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { CONTINUITY_REVIEW_FIELDS } from '@openvideo/shared/aiProjectDomain';
 import { approvedWriterShots } from '@openvideo/shared/writerPipeline';
@@ -123,7 +124,7 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
     })(); } }]);
   };
   return <View style={{ gap: 18, backgroundColor: theme.bg, padding: 14, borderRadius: 8 }}>
-    <Text style={{ color: theme.warn, fontSize: 11, fontWeight: '700', letterSpacing: 2 }}>OPENSCENE STUDIO · PRODUCTION</Text>
+    <Text style={{ color: theme.warn, fontSize: 11, fontWeight: '700', letterSpacing: 2 }} translateText>EL KING AI · PRODUCTION</Text>
     <Text style={{ color: theme.text, fontSize: 24, fontWeight: '700' }}>{dashboard.title}</Text>
     <Text style={{ color: theme.textWeak }}>{scenes.length} scenes · {shots.length} shots · {Math.round(shots.reduce((total, shot) => total + shot.durationSeconds, 0) / 60)} planned min</Text>
     <Pressable accessibilityRole="button" accessibilityState={{ expanded: showProductionNotes }} onPress={() => setShowProductionNotes(value => !value)} style={press({ minHeight: MIN_TAP, padding: 12, borderWidth: 1, borderColor: theme.line, borderRadius: 8 })}><Text style={{ color: theme.text, fontWeight: '700' }}>{showProductionNotes ? 'Hide' : 'Show'} film progress and notes</Text></Pressable>
@@ -147,15 +148,15 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
       {!!dashboard.screenplay && <Pressable accessibilityRole="button" onPress={() => setShowScreenplay(!showScreenplay)} style={press({ minHeight: MIN_TAP, justifyContent: 'center', borderTopWidth: 1, borderColor: theme.line })}><Text style={{ color: theme.accent, fontWeight: '700' }}>{showScreenplay ? 'Hide full screenplay' : 'Read full screenplay'}</Text></Pressable>}
       {showScreenplay && !!dashboard.screenplay && <Text selectable style={{ color: theme.text, lineHeight: 22 }}>{dashboard.screenplay}</Text>}
     </View>
-    <View style={{ borderWidth: 1, borderColor: theme.line, padding: 14, gap: 9 }}><Text style={{ color: theme.text, fontSize: 17, fontWeight: '700' }}>Decisions</Text>
-      {dashboard.decisions.length === 0 ? <Text style={{ color: theme.textWeak }}>No style decisions recorded yet.</Text> : dashboard.decisions.map(item => <View key={item.label}><Text style={{ color: theme.warn, fontSize: 11 }}>{item.label} · {item.source}</Text><Text style={{ color: theme.text }}>{item.value}</Text></View>)}
+    <View style={{ borderWidth: 1, borderColor: theme.line, padding: 14, gap: 9 }}><Text style={{ color: theme.text, fontSize: 17, fontWeight: '700' }} translateText>Decisions</Text>
+      {dashboard.decisions.length === 0 ? <Text style={{ color: theme.textWeak }} translateText>No style decisions recorded yet.</Text> : dashboard.decisions.map(item => <View key={item.label}><Text style={{ color: theme.warn, fontSize: 11 }}>{item.label} · {item.source}</Text><Text style={{ color: theme.text }}>{item.value}</Text></View>)}
     </View>
-    <View style={{ borderWidth: 1, borderColor: theme.line, padding: 14, gap: 9 }}><Text style={{ color: theme.text, fontSize: 17, fontWeight: '700' }}>Activity</Text>
-      {dashboard.activity.length === 0 ? <Text style={{ color: theme.textWeak }}>Scene approvals and generation results will appear here.</Text> : dashboard.activity.map(item => <View key={item.id}><Text style={{ color: theme.warn, fontSize: 11 }}>{item.at.slice(0, 16).replace('T', ' ')} · {item.label}</Text><Text style={{ color: theme.text }}>{item.detail}</Text></View>)}
+    <View style={{ borderWidth: 1, borderColor: theme.line, padding: 14, gap: 9 }}><Text style={{ color: theme.text, fontSize: 17, fontWeight: '700' }} translateText>Activity</Text>
+      {dashboard.activity.length === 0 ? <Text style={{ color: theme.textWeak }} translateText>Scene approvals and generation results will appear here.</Text> : dashboard.activity.map(item => <View key={item.id}><Text style={{ color: theme.warn, fontSize: 11 }}>{item.at.slice(0, 16).replace('T', ' ')} · {item.label}</Text><Text style={{ color: theme.text }}>{item.detail}</Text></View>)}
     </View>
     </>}
-    <Text style={{ color: theme.text, fontWeight: '700', fontSize: 17 }}>Scenes in story order</Text>
-    <Text style={{ color: theme.textWeak, fontSize: 12 }}>Select the current scene, finish its five-second shots, then continue. Assembly joins approved scenes on the timeline.</Text>
+    <Text style={{ color: theme.text, fontWeight: '700', fontSize: 17 }} translateText>Scenes in story order</Text>
+    <Text style={{ color: theme.textWeak, fontSize: 12 }} translateText>Select the current scene, finish its five-second shots, then continue. Assembly joins approved scenes on the timeline.</Text>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingVertical: 16 }} accessibilityLabel="Scene sequence">
       {scenes.map(scene => { const summary = productionSceneSummary(scene, shotRows); const selected = scene.sceneId === selectedScene?.sceneId; const sceneRows = shotRows.filter(row => row.sceneId === scene.sceneId); const visualRow = sceneRows.find(row => { const visual = productionShotVisual(row); return visual.takeAssetId || visual.storyboardAssetId; }) ?? sceneRows[0]; const visual = visualRow ? productionShotVisual(visualRow) : null; const asset = project.assets.find(item => item.id === (visual?.takeAssetId ?? visual?.storyboardAssetId)) ?? project.assets.find(item => item.id === visual?.storyboardAssetId); const fallbackImage = project.assets.find(item => item.id === visual?.storyboardAssetId); return <Pressable key={scene.sceneId} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => setSelectedSceneId(scene.sceneId)} style={press({ width: Math.max(210, Math.min(300, 190 + scene.durationMs / 1000)), padding: 8, borderWidth: selected ? 2 : 1, borderColor: selected ? theme.warn : theme.line, borderRadius: 8, gap: 7, backgroundColor: theme.surface })}>
         <Text style={{ color: theme.warn, fontSize: 11, fontWeight: '700', letterSpacing: 1 }}>SC {String(scene.order + 1).padStart(2, '0')} · {Math.round(scene.durationMs / 1000)}s</Text>
@@ -182,7 +183,7 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
           ]);
         })}
         {summary.stage === 'generate' && action(`Generate ${summary.pendingCount} shot(s) · review cost`, () => start({ sceneId: selectedScene.sceneId }))}
-        {summary.stage === 'review' && <Text style={{ color: theme.textWeak }}>Review the next take below, then approve it.</Text>}
+        {summary.stage === 'review' && <Text style={{ color: theme.textWeak }} translateText>Review the next take below, then approve it.</Text>}
         {summary.stage === 'complete' && scenes.some(scene => scene.order > selectedScene.order) && action('Continue to next scene', () => setSelectedSceneId(scenes[scenes.findIndex(scene => scene.sceneId === selectedScene.sceneId) + 1]!.sceneId))}
         {summary.stage === 'complete' && !scenes.some(scene => scene.order > selectedScene.order) && action(sequential ? 'Assemble current cut' : 'Assemble final cut', () => {
           try {
@@ -194,7 +195,7 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
         }, !dashboard.assemblyReady)}
       </>; })()}
     </View>}
-    <Text style={{ color: theme.warn, fontSize: 11, fontWeight: '700', letterSpacing: 2 }}>SHOT BOARD</Text><Text style={{ color: theme.text, fontWeight: '700', fontSize: 18 }}>{selectedScene ? `Scene ${selectedScene.order + 1} · ${selectedScene.title}` : 'Shot prompts'}</Text>
+    <Text style={{ color: theme.warn, fontSize: 11, fontWeight: '700', letterSpacing: 2 }} translateText>SHOT BOARD</Text><Text style={{ color: theme.text, fontWeight: '700', fontSize: 18 }}>{selectedScene ? `Scene ${selectedScene.order + 1} · ${selectedScene.title}` : 'Shot prompts'}</Text>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingVertical: 16 }} accessibilityLabel="Scene shot board">
     {shotRows.filter(row => row.sceneId === selectedScene?.sceneId).map((row, index) => {
       const visual = productionShotVisual(row);
@@ -207,7 +208,7 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
         <StoryboardSlate projectId={projectId} asset={asset} fallbackImage={image} state={row.state} description={row.label} height={146} showVideoPreview={active && storyboardPreviewId === row.shotId} />
         {asset?.kind === 'video' && action(storyboardPreviewId === row.shotId ? 'Close approved take preview' : 'Preview approved take', () => setStoryboardPreviewId(storyboardPreviewId === row.shotId ? null : row.shotId))}
         <Text style={{ color: theme.text, fontWeight: '700' }}>{row.label}</Text>
-        <Text style={{ color: theme.warn, fontSize: 11, letterSpacing: 1 }}>Planned video prompt</Text>
+        <Text style={{ color: theme.warn, fontSize: 11, letterSpacing: 1 }} translateText>Planned video prompt</Text>
         <Text selectable style={{ color: theme.text, fontSize: 12, lineHeight: 18 }}>{row.prompt}</Text>
         <Text style={{ color: theme.textWeak }}>{row.candidateCount} take(s){latest ? ` · Latest: ${latest.status} / ${latest.review?.decision ?? 'pending'}` : ''}{row.approvedGeneration ? ' · Approved take retained until replacement approval' : ''}</Text>
         {action(row.candidateCount > 0 ? 'Regenerate this shot · review cost' : 'Generate this shot · review cost', () => start({ shotId: row.shotId }), !eligibility.ok)}
@@ -215,7 +216,7 @@ export function ProductionRunBoard({ projectId, model, aspectRatio, disabled, co
       </View>;
     })}
     </ScrollView>
-    {lock.current && <><Text style={{ color: theme.textWeak }}>{stopRequested ? 'Stopping after the submitted take is saved…' : 'Stopping does not cancel submitted provider jobs or charges.'}</Text><Pressable accessibilityRole="button" disabled={stopRequested} onPress={() => { queueControl.current.requestStop(); setStopRequested(true); }} style={press({ minHeight: MIN_TAP, padding: 12, borderWidth: 1, borderColor: theme.line, borderRadius: 8 })}><Text style={{ color: theme.text }}>Stop after current shot</Text></Pressable></>}
+    {lock.current && <><Text style={{ color: theme.textWeak }}>{stopRequested ? 'Stopping after the submitted take is saved…' : 'Stopping does not cancel submitted provider jobs or charges.'}</Text><Pressable accessibilityRole="button" disabled={stopRequested} onPress={() => { queueControl.current.requestStop(); setStopRequested(true); }} style={press({ minHeight: MIN_TAP, padding: 12, borderWidth: 1, borderColor: theme.line, borderRadius: 8 })}><Text style={{ color: theme.text }} translateText>Stop after current shot</Text></Pressable></>}
     <Text style={{ color: theme.text, fontWeight: '600' }}>{selectedScene ? `Scene ${selectedScene.order + 1} takes` : 'Scene takes'}</Text>
     {project.ai.generations.filter(candidate => visibleShotIds.has(candidate.shotId) && candidate.status === 'completed').map(candidate => {
       const asset = project.assets.find(item => candidate.outputAssetIds.includes(item.id));

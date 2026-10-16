@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../components/AppText';
 import { getDomainModels, isDomainModelAvailableOnRuntime } from '@openvideo/shared/aiDomainModels';
 import { createEmptyAiProjectDocument, type AiProjectDocument } from '@openvideo/shared/aiProjectDomain';
 import { requestWriter } from '@openvideo/shared/writerGeneration';
@@ -17,6 +18,7 @@ import { readProviderConnections } from '../lib/mediaProviders';
 import { readProject, writeProject } from '../lib/projectStore';
 import { MIN_TAP, press } from '../lib/touch';
 import { theme } from '../lib/theme';
+
 const useWriterPipeline = createUseWriterPipeline({ useEffect, useRef, useState });
 
 type WriterScreenProps = {
@@ -100,19 +102,19 @@ function ProjectWriterScreen({ topInset, keyboardOffset, projectId, connectionsV
   </View>;
   return (
     <FormScreen topInset={topInset} keyboardOffset={keyboardOffset}>
-      <Text style={styles.h1}>Writer Studio</Text>
-      <Text style={styles.sub}>Idea → screenplay → segments/scenes → video prompts. Edit and approve each step; nothing advances automatically.</Text>
+      <Text style={styles.h1} translateText>Writer Studio</Text>
+      <Text style={styles.sub} translateText>Idea → screenplay → segments/scenes → video prompts. Edit and approve each step; nothing advances automatically.</Text>
       <ModelSelect domain="writer" selectedId={modelId} connected={connected} onSelect={(next) => setModelId(next.id)} onConnectionChange={refresh} />
       <View style={styles.row}>{WRITER_STAGES.map((stage) => <View key={stage}>{action(
         WRITER_STAGE_LABELS[stage] + (flow.state?.artifacts.some((a) => a.stage === stage && a.approved) && !briefChanged ? ' ✓' : ''),
         () => { flow.chooseStage(stage); setNotes(''); },
         flow.busy || flow.dirty || !canOpenWriterStage(flow.state ?? { artifacts: [] }, stage) || (briefChanged && stage !== 'concept')
       )}</View>)}</View>
-      <Text style={styles.label}>Creative brief source</Text>
+      <Text style={styles.label} translateText>Creative brief source</Text>
       <View style={styles.row}>{(['idea_to_script', 'content_to_script', 'rewrite'] as const).map((entry) => <View key={entry}>
         {action((mode === entry ? '✓ ' : '') + entry.replaceAll('_', ' '), () => setMode(entry), !editable)}
       </View>)}</View>
-      {mode === 'rewrite' && <View><Text style={styles.label}>Script version</Text>
+      {mode === 'rewrite' && <View><Text style={styles.label} translateText>Script version</Text>
         {(project?.ai.scripts ?? []).slice().reverse().map((script) => <View key={script.id}>
           {action((script.id === parentScriptId ? '✓ ' : '') + script.title, () => setParentScriptId(script.id), !editable)}
         </View>)}
@@ -120,19 +122,19 @@ function ProjectWriterScreen({ topInset, keyboardOffset, projectId, connectionsV
       {field('Idea / source / rewrite instructions', sourceText, setSourceText, true)}
       {field('Language', language, setLanguage)}{field('Seconds', durationText, setDurationText)}
       {field('Audience', audience, setAudience)}{field('Tone', tone, setTone)}
-      <Text style={styles.label}>Video style</Text>
+      <Text style={styles.label} translateText>Video style</Text>
       <View style={styles.row}>{(['', ...WRITER_VIDEO_STYLES] as const).map((value) => <View key={value}>
         {action((videoStyle === value ? '✓ ' : '') + (value ? WRITER_VIDEO_STYLE_LABELS[value] : 'Auto'), () => setVideoStyle(value), !editable)}
       </View>)}</View>
       {field('Custom video style (optional)', customVideoStyle, setCustomVideoStyle)}
-      <Text style={styles.label}>Emotional goal</Text>
+      <Text style={styles.label} translateText>Emotional goal</Text>
       <View style={styles.row}>{(['', ...WRITER_EMOTIONAL_GOALS] as const).map((value) => <View key={value}>
         {action((emotionalGoal === value ? '✓ ' : '') + (value || 'Auto'), () => setEmotionalGoal(value), !editable)}
       </View>)}</View>
-      {briefChanged && <Text style={styles.message}>Brief changed. Return to step 1 and generate a revised concept; dependent approvals will reset, with text retained.</Text>}
-      <Text style={styles.label}>Revision notes for this stage</Text>
+      {briefChanged && <Text style={styles.message} translateText>Brief changed. Return to step 1 and generate a revised concept; dependent approvals will reset, with text retained.</Text>}
+      <Text style={styles.label} translateText>Revision notes for this stage</Text>
       <TextInput editable={!flow.busy} multiline value={notes} onChangeText={setNotes} style={[styles.input, styles.source]} />
-      <Text style={styles.note}>Generate sends the brief, existing rewrite script, approved preceding documents and revision notes to the selected provider. Text-generation charges may apply. No video is generated.</Text>
+      <Text style={styles.note} translateText>Generate sends the brief, existing rewrite script, approved preceding documents and revision notes to the selected provider. Text-generation charges may apply. No video is generated.</Text>
       {!available && <Text style={styles.message}>{model?.unavailableReason ?? 'This model is unavailable on mobile.'}</Text>}
       <Pressable accessibilityRole="button" disabled={!canGenerate} onPress={generate} style={press([styles.primary, !canGenerate && styles.off])}>
         {flow.busy ? <ActivityIndicator color={theme.bg} /> : <Text style={styles.primaryText}>{flow.artifact ? 'Regenerate this stage' : 'Generate this stage'}</Text>}
@@ -142,12 +144,12 @@ function ProjectWriterScreen({ topInset, keyboardOffset, projectId, connectionsV
         <Text style={styles.previewTitle}>{WRITER_STAGE_LABELS[flow.stage]} — {approved ? 'Approved' : flow.dirty ? 'Unsaved draft' : 'Review'}</Text>
         {WRITER_STAGE_CHECKLISTS[flow.stage].map((item) => <Text key={item} style={styles.note}>• {item}</Text>)}
         {flow.artifact && <>
-          <Text style={styles.label}>Title</Text><TextInput editable={!flow.busy} value={flow.artifact.title} onChangeText={(title) => flow.edit({ title })} style={styles.input} />
+          <Text style={styles.label} translateText>Title</Text><TextInput editable={!flow.busy} value={flow.artifact.title} onChangeText={(title) => flow.edit({ title })} style={styles.input} />
           {flow.stage === 'prompts' && <WriterPromptEditor content={flow.artifact.content} targetSeconds={targetDurationSeconds} disabled={flow.busy} onChange={(content) => flow.edit({ content })} />}
           <Text style={styles.label}>{flow.stage === 'prompts' ? 'Advanced scene / shot JSON (editable)' : 'Full document (editable)'}</Text>
           <TextInput ref={contentInput} onFocus={() => reveal(contentInput.current)} editable={!flow.busy} multiline textAlignVertical="top"
             value={flow.artifact.content} onChangeText={(content) => flow.edit({ content })} style={[styles.input, { minHeight: 360 }]} />
-          {flow.stage === 'prompts' && <Text style={styles.note}>The approved screenplay is preserved on save. Change story text in step 2.</Text>}
+          {flow.stage === 'prompts' && <Text style={styles.note} translateText>The approved screenplay is preserved on save. Change story text in step 2.</Text>}
           <View style={styles.row}>
             {flow.dirty && action('Discard edits', flow.discard, flow.busy)}
             {action('Save draft', () => void flow.save(false), flow.busy || briefChanged)}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Text } from '../components/AppText';
 
 import {
   appendAssetToTimeline,
@@ -141,11 +142,9 @@ export function LibraryScreen({
 
   return (
     <FormScreen topInset={topInset} keyboardOffset={keyboardOffset} contentStyle={styles.content}>
-      <Text style={styles.h1}>Library</Text>
-      <Text style={styles.sub}>
-        Everything this project holds — clips you imported, shots and stills the app generated. Deleting is per
-        project: nothing here touches your phone&apos;s own photo library unless you save it there.
-      </Text>
+      <Text style={styles.h1} translateText>Library</Text>
+      <Text style={styles.sub} translateText>Everything this project holds — clips you imported, shots and stills the app generated. Deleting is per
+        project: nothing here touches your phone&apos;s own photo library unless you save it there.</Text>
 
       <View style={styles.row}>
         {(['all', 'generated', 'imported'] as const).map((option) => (
@@ -168,7 +167,7 @@ export function LibraryScreen({
       )}
 
       {projectId === null ? (
-        <Text style={styles.empty}>Open a project to see what it holds.</Text>
+        <Text style={styles.empty} translateText>Open a project to see what it holds.</Text>
       ) : shown.length === 0 ? (
         <Text style={styles.empty}>
           {filter === 'generated'
@@ -217,10 +216,10 @@ export function LibraryScreen({
 
               <View style={styles.actions}>
                 <Pressable accessibilityRole="button" onPress={() => place(asset)} style={press(styles.action)}>
-                  <Text style={styles.actionText}>Add & open editor</Text>
+                  <Text style={styles.actionText} translateText>Add & open editor</Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={() => void keep(asset)} style={press(styles.action)}>
-                  <Text style={styles.actionText}>Save or share</Text>
+                  <Text style={styles.actionText} translateText>Save or share</Text>
                 </Pressable>
               </View>
             </View>

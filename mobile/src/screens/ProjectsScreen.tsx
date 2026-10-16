@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Image,
-  Modal,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
+import { KeyboardAvoidingView, Image, Modal, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { Alert, Text, TextInput } from '../components/AppText';
 
 import { track } from '../lib/analyticsClient';
 import { assetUri, createProject, deleteProject, listProjects, readProject, renameProject, type ProjectSummary } from '../lib/projectStore';
@@ -85,7 +75,10 @@ export function ProjectsScreen({
       refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} tintColor={theme.textWeak} />}
     >
       <View style={styles.headRow}>
-        <Text style={styles.h1}>Project library</Text>
+        <View style={styles.heading}>
+          <Text style={styles.brand} translateText>EL KING AI</Text>
+          <Text style={styles.h1} translateText>Project library</Text>
+        </View>
         {onOpenSettings !== undefined && (
           <Pressable
             accessibilityRole="button"
@@ -97,20 +90,18 @@ export function ProjectsScreen({
           </Pressable>
         )}
       </View>
-      <Text style={styles.sub}>
-        Stored inside the app. Imported clips are copied in, so a project keeps working after the original is deleted
-        from your library.
-      </Text>
+      <Text style={styles.sub} translateText>Stored inside the app. Imported clips are copied in, so a project keeps working after the original is deleted
+        from your library.</Text>
 
-      <Text style={styles.cardTitle}>Choose a project type</Text>
+      <Text style={styles.cardTitle} translateText>Choose a project type</Text>
       {WORKSPACE_MODES.map(mode => <Pressable key={mode} accessibilityRole="button"
         accessibilityState={{ selected: entrance === mode }}
         onPress={() => setEntrance(mode)} style={press([styles.entrance, entrance === mode && styles.cardActive])}>
-        <Text style={styles.cardTitle}>{WORKSPACE_EXPERIENCES[mode].title}{entrance === mode ? ' · Selected' : ''}</Text>
+        <Text style={styles.cardTitle} translateText>{WORKSPACE_EXPERIENCES[mode].title}{entrance === mode ? ' · Selected' : ''}</Text>
         <Text style={styles.sub}>{WORKSPACE_EXPERIENCES[mode].description}</Text>
         <Text style={styles.cardMeta}>{WORKSPACE_EXPERIENCES[mode].tools}</Text>
       </Pressable>)}
-      <Text style={styles.sub}>New projects keep this type. Send generated media to a separate editing project when ready. All projects remain visible; opening one uses its saved workspace type.</Text>
+      <Text style={styles.sub} translateText>New projects keep this type. Send generated media to a separate editing project when ready. All projects remain visible; opening one uses its saved workspace type.</Text>
       <View style={styles.newRow}>
         <TextInput
           style={styles.input}
@@ -121,24 +112,24 @@ export function ProjectsScreen({
           accessibilityLabel="New project name"
           returnKeyType="go"
           onSubmitEditing={create}
-        />
+         translatePlaceholder translateAccessibilityLabel/>
         <Pressable accessibilityRole="button" onPress={create} style={press(styles.create)}>
-          <Text style={styles.createText}>Create</Text>
+          <Text style={styles.createText} translateText>Create</Text>
         </Pressable>
       </View>
 
       {visibleProjects.length === 0 ? (
-        <Text style={styles.empty}>No projects yet. Create one to get started.</Text>
+        <Text style={styles.empty} translateText>No projects yet. Create one to get started.</Text>
       ) : (
         visibleProjects.map((project) => (
           <View key={project.id} style={[styles.card, project.id === activeProjectId && styles.cardActive]}>
             <Pressable style={press(styles.cardMain)} accessibilityRole="button" onPress={() => onOpen(project.id, modeForProjectType(project.projectType, entrance))}>
               {(() => { const still = readProject(project.id)?.assets.find(asset => asset.kind === 'image'); return <View style={styles.cover}>
-                {still ? <Image source={{ uri: assetUri(project.id, still) }} resizeMode="cover" style={styles.coverImage} /> : <Text style={styles.coverEmpty}>NO IMAGE COVER</Text>}
-                <Text style={styles.coverType}>{(project.projectType ?? 'legacy').toUpperCase()}</Text>
+                {still ? <Image source={{ uri: assetUri(project.id, still) }} resizeMode="cover" style={styles.coverImage} /> : <Text style={styles.coverEmpty} translateText>NO IMAGE COVER</Text>}
+              <Text style={styles.coverType} translateText>{(project.projectType ?? 'legacy').toUpperCase()}</Text>
               </View>; })()}
-              <View style={styles.cardInfo}><Text style={styles.cardTitle}>{project.name}</Text>
-              <Text style={styles.cardMeta}>{project.id === activeProjectId ? 'OPEN · ' : ''}edited {project.updatedAt.slice(0, 16).replace('T', ' ')}</Text></View>
+              <View style={styles.cardInfo}><Text style={styles.cardTitle} translateText={false}>{project.name}</Text>
+              <Text style={styles.cardMeta} translateText>{project.id === activeProjectId ? 'OPEN · ' : ''}edited {project.updatedAt.slice(0, 16).replace('T', ' ')}</Text></View>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -176,7 +167,7 @@ export function ProjectsScreen({
             the keyboard lands. */}
         <KeyboardAvoidingView style={styles.scrim} behavior="padding">
           <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Rename project</Text>
+            <Text style={styles.sheetTitle} translateText>Rename project</Text>
             <TextInput
               style={styles.sheetInput}
               value={renaming?.name ?? ''}
@@ -188,10 +179,10 @@ export function ProjectsScreen({
               selectTextOnFocus
               returnKeyType="done"
               onSubmitEditing={commitRename}
-            />
+             translatePlaceholder translateAccessibilityLabel/>
             <View style={styles.sheetRow}>
               <Pressable accessibilityRole="button" onPress={() => setRenaming(null)} style={press(styles.sheetCancel)}>
-                <Text style={styles.sheetCancelText}>Cancel</Text>
+                <Text style={styles.sheetCancelText} translateText>Cancel</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
@@ -199,7 +190,7 @@ export function ProjectsScreen({
                 onPress={commitRename}
                 style={press([styles.sheetSave, (renaming?.name ?? '').trim().length === 0 && styles.sheetSaveOff])}
               >
-                <Text style={styles.sheetSaveText}>Rename</Text>
+                <Text style={styles.sheetSaveText} translateText>Rename</Text>
               </Pressable>
             </View>
           </View>
@@ -211,6 +202,8 @@ export function ProjectsScreen({
 
 const styles = StyleSheet.create({
   content: { gap: 10 },
+  heading: { flex: 1, gap: 3 },
+  brand: { color: theme.accent, fontSize: 12, fontWeight: '800', letterSpacing: 2 },
   headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   h1: { color: theme.text, fontSize: 26, fontWeight: '700' },
   sub: { color: theme.textWeak, fontSize: 13, lineHeight: 19, marginBottom: 6 },
