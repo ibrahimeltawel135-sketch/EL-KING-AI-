@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../components/AppText';
 
 import { LLM_PROVIDERS, POPULAR_LLM_PROVIDER_IDS, getLlmCatalogProvider } from '@openvideo/shared/llmProviders';
 import { AGENT_SCOPE_POLICY } from '@openvideo/shared/agentScope';
@@ -62,7 +53,7 @@ const CAPABILITIES =
   'that does it, then do the part you can.';
 
 const SYSTEM_PROMPT =
-  'You are the OpenScene editing assistant on a phone. Be brief — the screen is small. ' +
+  'You are the EL KING AI editing assistant on a phone. Be brief — the screen is small. ' +
   // Seen on the device: a reply that answered, then answered again in a second
   // paragraph. On a phone that is most of a screenful of scrolling for nothing.
   'Say it once; do not restate a point you have already made. ' +
@@ -358,7 +349,7 @@ export function AgentScreen({
             }}
             style={press(styles.newChat)}
           >
-            <Text style={styles.newChatText}>New</Text>
+            <Text style={styles.newChatText} translateText>New</Text>
           </Pressable>
         )}
       </View>
@@ -380,7 +371,7 @@ export function AgentScreen({
                 style={press([styles.chip, provider.id === providerId && styles.chipOn])}
               >
                 <Text style={[styles.chipText, provider.id === providerId && styles.chipTextOn]}>{provider.label}</Text>
-                {connected[provider.id] !== true && provider.auth === 'api-key' && <Text style={styles.chipDot}>•</Text>}
+                {connected[provider.id] !== true && provider.auth === 'api-key' && <Text style={styles.chipDot} translateText>•</Text>}
               </Pressable>
             ))}
           </ScrollView>
@@ -430,10 +421,8 @@ export function AgentScreen({
         onContentSizeChange={() => scroller.current?.scrollToEnd({ animated: true })}
       >
         {messages.length === 0 && (
-          <Text style={styles.empty}>
-            Ask for a plan, a script check, an image, or a shot. Every tool call is shown for approval first, and
-            anything that charges your provider says the price before it runs.
-          </Text>
+          <Text style={styles.empty} translateText>Ask for a plan, a script check, an image, or a shot. Every tool call is shown for approval first, and
+            anything that charges your provider says the price before it runs.</Text>
         )}
         {messages.map((message, index) => {
           if (message.role === 'tool') {
@@ -445,7 +434,7 @@ export function AgentScreen({
                   <Image style={styles.image} source={{ uri: message.image }} accessibilityLabel="Generated image" resizeMode="cover" />
                 )}
                 {message.imageDropped === true && (
-                  <Text style={styles.toolNote}>The image is not kept with the transcript. Generate it again to see it.</Text>
+                  <Text style={styles.toolNote} translateText>The image is not kept with the transcript. Generate it again to see it.</Text>
                 )}
               </View>
             );
@@ -482,10 +471,10 @@ export function AgentScreen({
           </Text>
           <View style={styles.approveRow}>
             <Pressable accessibilityRole="button" style={press(styles.approveYes)} onPress={() => decide('once')}>
-              <Text style={styles.approveYesText}>Run</Text>
+              <Text style={styles.approveYesText} translateText>Run</Text>
             </Pressable>
             <Pressable accessibilityRole="button" style={press(styles.approveNo)} onPress={() => decide('reject')}>
-              <Text style={styles.approveNoText}>Decline</Text>
+              <Text style={styles.approveNoText} translateText>Decline</Text>
             </Pressable>
           </View>
         </View>
@@ -510,7 +499,7 @@ export function AgentScreen({
           placeholderTextColor={theme.textWeaker}
           multiline
           accessibilityLabel="Message"
-        />
+         translatePlaceholder translateAccessibilityLabel/>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Send"
@@ -518,7 +507,7 @@ export function AgentScreen({
           onPress={send}
           style={press([styles.send, (thinking || pending !== null || draft.trim().length === 0) && styles.sendOff])}
         >
-          <Text style={styles.sendText}>↑</Text>
+          <Text style={styles.sendText} translateText>↑</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>

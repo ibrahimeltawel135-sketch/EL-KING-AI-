@@ -1,4 +1,5 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from './AppText';
 
 import { theme } from '../lib/theme';
 import type { Decision, SpendFeature } from '../lib/permissions';
@@ -53,13 +54,13 @@ export function SpendPrompt({
             Settings.
           </Text>
           <Pressable accessibilityRole="button" style={press(styles.primary)} onPress={() => onDecide('once')}>
-            <Text style={styles.primaryText}>Allow once</Text>
+            <Text style={styles.primaryText} translateText>Allow once</Text>
           </Pressable>
           <Pressable accessibilityRole="button" style={press(styles.secondary)} onPress={() => onDecide('always')}>
             <Text style={styles.secondaryText}>Always allow {LABEL[feature]}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" style={press(styles.secondary)} onPress={() => onDecide('reject')}>
-            <Text style={styles.rejectText}>Not now</Text>
+            <Text style={styles.rejectText} translateText>Not now</Text>
           </Pressable>
         </View>
       </View>

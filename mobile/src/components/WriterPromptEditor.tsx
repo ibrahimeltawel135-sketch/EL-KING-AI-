@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text, TextInput } from './AppText';
 import { editWriterPromptShot, parseWriterPromptText } from '@openvideo/shared/writerPipeline';
 import { writerDraftDurationMatchesTarget, writerDraftDurationSeconds, WRITER_DURATION_TOLERANCE_SECONDS } from '@openvideo/shared/writerWorkflow';
 import { theme } from '../lib/theme';
@@ -12,7 +13,7 @@ export function WriterPromptEditor({ content, targetSeconds, disabled, onChange 
   const draft = parseWriterPromptText(content);
   const textStyle = { color: theme.text, lineHeight: 20 };
   const inputStyle = { color: theme.text, minHeight: MIN_TAP, borderWidth: 1, borderColor: theme.line, padding: 10, borderRadius: 8 };
-  if (!draft) return <Text style={textStyle}>Fix the JSON below to enable the shot editor. Incomplete JSON can still be saved as a draft.</Text>;
+  if (!draft) return <Text style={textStyle} translateText>Fix the JSON below to enable the shot editor. Incomplete JSON can still be saved as a draft.</Text>;
   const seconds = writerDraftDurationSeconds(draft);
   const timingMatches = writerDraftDurationMatchesTarget(draft, targetSeconds);
   return <View style={{ gap: 12 }}>
@@ -34,7 +35,7 @@ export function WriterPromptEditor({ content, targetSeconds, disabled, onChange 
             <Text style={textStyle}>{field === 'action' ? 'Video prompt / action' : field}</Text>
             <TextInput accessibilityLabel={`Shot ${si + 1}.${sh + 1} ${field}`} editable={!disabled} multiline value={shot[field]} style={inputStyle} onChangeText={(text) => onChange(editWriterPromptShot(content, si, sh, { [field]: text }))} />
           </View>)}
-          <Text style={textStyle}>Audio cues (one per line)</Text>
+          <Text style={textStyle} translateText>Audio cues (one per line)</Text>
           <TextInput accessibilityLabel={`Shot ${si + 1}.${sh + 1} audio cues`} editable={!disabled} multiline value={shot.audioCues.join('\n')} style={inputStyle} onChangeText={(text) => onChange(editWriterPromptShot(content, si, sh, { audioCues: text.split('\n') }))} />
         </View>)}
       </>}

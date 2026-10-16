@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, StyleSheet, View } from 'react-native';
+import { Text } from './AppText';
 import { Gesture, GestureDetector, type GestureType } from 'react-native-gesture-handler';
 
 import type { PersistedTimelineClip } from '@openvideo/shared/timelineTypes';
@@ -234,7 +235,7 @@ export function TimelineClip({
             ))}
           </View>
         )}
-        <Text style={[styles.label, (thumbnails.length > 0 || peaks.length > 0) && styles.labelOverFrames]} numberOfLines={1}>
+        <Text style={[styles.label, (thumbnails.length > 0 || peaks.length > 0) && styles.labelOverFrames]} numberOfLines={1} translateText={false}>
           {label}
         </Text>
         {/*

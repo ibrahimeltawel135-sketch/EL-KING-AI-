@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from './AppText';
 
 import { DEFAULT_MEDIA_LIBRARY_FILTERS, mediaLibraryFiltersActive, mediaLibraryView, MEDIA_LIBRARY_SORTS, type MediaLibraryFilters } from '@openvideo/shared/mediaLibraryView';
 import { assetByteLength, type MobileAsset } from '../lib/projectStore';
@@ -54,7 +55,7 @@ export function MediaLibrary({
           placeholderTextColor={theme.textWeaker}
           accessibilityLabel="Search media by name"
           style={styles.search}
-        />
+         translatePlaceholder translateAccessibilityLabel/>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Sort media: ${sortLabel}. Tap to change`}
@@ -72,7 +73,7 @@ export function MediaLibrary({
           onPress={() => onFiltersChange({ ...filters, unusedOnly: !filters.unusedOnly })}
           style={press(styles.unused)}
         >
-          <Text style={styles.sortText}>{filters.unusedOnly ? '☑' : '□'} Unused only</Text>
+          <Text style={styles.sortText} translateText>{filters.unusedOnly ? '☑' : '□'} Unused only</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -81,12 +82,12 @@ export function MediaLibrary({
           onPress={() => onFiltersChange(DEFAULT_MEDIA_LIBRARY_FILTERS)}
           style={press(styles.reset)}
         >
-          <Text style={[styles.sortText, !filtersActive && styles.disabled]}>Reset</Text>
+          <Text style={[styles.sortText, !filtersActive && styles.disabled]} translateText>Reset</Text>
         </Pressable>
       </View>
       {assets.length === 0
-        ? <Text style={styles.empty}>No media yet. Import a clip, or generate one under Video.</Text>
-        : visibleAssets.length === 0 && <Text style={styles.empty}>No media matches the current filters.</Text>}
+        ? <Text style={styles.empty} translateText>No media yet. Import a clip, or generate one under Video.</Text>
+        : visibleAssets.length === 0 && <Text style={styles.empty} translateText>No media matches the current filters.</Text>}
       {visibleAssets.map((asset) => {
         const used = usage.get(asset.id) ?? 0;
         return (
@@ -95,7 +96,7 @@ export function MediaLibrary({
               <Text style={styles.name} numberOfLines={1}>
                 {asset.displayName}
               </Text>
-              <Text style={styles.meta}>
+              <Text style={styles.meta} translateText>
                 {(asset.durationMs / 1000).toFixed(1)}s · {formatBytes(assetByteLength(projectId, asset))} ·{' '}
                 {used === 0 ? 'not on the timeline' : `${used} clip${used === 1 ? '' : 's'}`}
               </Text>
@@ -107,7 +108,7 @@ export function MediaLibrary({
               onPress={() => onAdd(asset.id)}
               style={press(styles.action)}
             >
-              <Text style={styles.actionText}>+ Add</Text>
+              <Text style={styles.actionText} translateText>+ Add</Text>
             </Pressable>
 
             {/* Deleting removes the file, so it asks — and says what goes with
@@ -122,7 +123,7 @@ export function MediaLibrary({
                 }}
                 style={press([styles.action, styles.danger])}
               >
-                <Text style={styles.dangerText}>{used > 0 ? `Delete + ${used}` : 'Delete'}</Text>
+                <Text style={styles.dangerText} translateText>{used > 0 ? `Delete + ${used}` : 'Delete'}</Text>
               </Pressable>
             ) : (
               <Pressable
@@ -131,16 +132,14 @@ export function MediaLibrary({
                 onPress={() => setConfirming(asset.id)}
                 style={press(styles.action)}
               >
-                <Text style={styles.actionText}>✕</Text>
+                <Text style={styles.actionText} translateText>✕</Text>
               </Pressable>
             )}
           </View>
         );
       })}
       {confirming !== null && (
-        <Text style={styles.warn}>
-          Deleting removes the file from the project and every clip that used it. It cannot be undone.
-        </Text>
+        <Text style={styles.warn} translateText>Deleting removes the file from the project and every clip that used it. It cannot be undone.</Text>
       )}
     </ScrollView>
   );

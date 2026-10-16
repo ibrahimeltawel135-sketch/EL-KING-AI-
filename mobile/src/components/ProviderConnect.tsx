@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from './AppText';
 
 import { readSlot, writeSlot } from '../lib/credentials';
 import { alibabaVideoBaseUrl } from '@openvideo/shared/videoGeneration';
@@ -94,7 +95,7 @@ export function ProviderConnect({
           <Text style={styles.title}>{label}</Text>
           {meta !== undefined && <Text style={styles.meta}>{meta}</Text>}
         </View>
-        <Text style={[styles.badge, connected ? styles.badgeOn : styles.badgeOff]}>
+        <Text style={[styles.badge, connected ? styles.badgeOn : styles.badgeOff]} translateText>
           {slot === 'dashscopeApiKey' && connected && !workspaceStored ? 'needs Workspace ID' : connected ? 'connected' : 'not connected'}
         </Text>
       </Pressable>
@@ -108,6 +109,7 @@ export function ProviderConnect({
             value={draft}
             onChangeText={setDraft}
             placeholder={connected ? 'Replace the stored key' : hint}
+            translatePlaceholder={connected}
             placeholderTextColor={theme.textWeaker}
             autoCapitalize="none"
             autoCorrect={false}
@@ -126,7 +128,7 @@ export function ProviderConnect({
               onPress={() => void save()}
               style={press([styles.save, action === 'none' && styles.saveOff, action === 'clear' && styles.saveClear])}
             >
-              <Text style={[styles.saveText, action === 'clear' && styles.saveClearText]}>
+              <Text style={[styles.saveText, action === 'clear' && styles.saveClearText]} translateText>
                 {action === 'clear' ? 'Remove stored key' : 'Save'}
               </Text>
             </Pressable>
@@ -134,10 +136,10 @@ export function ProviderConnect({
           </View>
           {slot === 'dashscopeApiKey' && (
             <View style={styles.actions}>
-              <Text style={styles.footnote}>Singapore Workspace ID {workspaceStored ? '✓ saved' : '· required for video'}</Text>
+              <Text style={styles.footnote} translateText>Singapore Workspace ID {workspaceStored ? '✓ saved' : '· required for video'}</Text>
               <TextInput style={styles.input} value={workspaceDraft} onChangeText={setWorkspaceDraft}
                 placeholder="llm-..." placeholderTextColor={theme.textWeaker} autoCapitalize="none"
-                autoCorrect={false} accessibilityLabel="Alibaba Singapore Workspace ID" />
+                autoCorrect={false} accessibilityLabel="Alibaba Singapore Workspace ID" translateAccessibilityLabel />
               <Pressable accessibilityRole="button" style={press(styles.save)} onPress={() => {
                 try {
                   alibabaVideoBaseUrl(workspaceDraft);
@@ -148,13 +150,13 @@ export function ProviderConnect({
                   setNote('Enter a valid Singapore Workspace ID, such as llm-123.');
                 }
               }}>
-                <Text style={styles.saveText}>Save Workspace ID</Text>
+                <Text style={styles.saveText} translateText>Save Workspace ID</Text>
               </Pressable>
             </View>
           )}
           {chatGptSignIn === true && (
             <>
-              <Text style={styles.or}>or</Text>
+              <Text style={styles.or} translateText>or</Text>
               <Pressable
                 accessibilityRole="button"
                 disabled={busy}
@@ -180,15 +182,11 @@ export function ProviderConnect({
                   {busy ? 'Opening…' : signedIn ? 'Sign out of ChatGPT' : 'Sign in with ChatGPT'}
                 </Text>
               </Pressable>
-              <Text style={styles.footnote}>
-                Opens your browser, so the password is typed there and never in this app. Serves only the models that
-                backend runs; a key reaches everything else.
-              </Text>
+              <Text style={styles.footnote} translateText>Opens your browser, so the password is typed there and never in this app. Serves only the models that
+                backend runs; a key reaches everything else.</Text>
             </>
           )}
-          <Text style={styles.footnote}>
-            Held in the device keystore — Keychain on iOS, Keystore on Android. Never read back for display.
-          </Text>
+          <Text style={styles.footnote} translateText>Held in the device keystore — Keychain on iOS, Keystore on Android. Never read back for display.</Text>
         </>
       )}
     </View>

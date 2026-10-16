@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Text, TextInput } from './AppText';
 import type { AiProjectDocument } from '@openvideo/shared/aiProjectDomain';
 import { createUseProductionPlan } from '@openvideo/shared/useProductionPlan';
 import { pipelineBaseRequest, pipelineMatchesBrief, parseWriterPromptText } from '@openvideo/shared/writerPipeline';
@@ -14,6 +15,7 @@ import { nextProductionCheckpoint } from '@openvideo/shared/productionPlan';
 import { WRITER_STAGES, WRITER_STAGE_LABELS, WRITER_STAGE_CHECKLISTS } from '@openvideo/shared/writerStages';
 import { theme } from '../lib/theme';
 import { MIN_TAP, press } from '../lib/touch';
+
 const useProductionPlan = createUseProductionPlan({ useEffect, useRef, useState });
 
 export function ProductionPlanComposer({ document, onSave, disabled, connectionsVersion }: {
@@ -42,17 +44,17 @@ export function ProductionPlanComposer({ document, onSave, disabled, connections
   useEffect(() => { if (checkpoint) setExpanded(checkpoint); }, [checkpoint]);
   const action = (label: string, callback: () => void, off = false) => <Pressable accessibilityRole="button" disabled={off} onPress={callback} style={press([styles.button, off && { opacity: .5 }])}><Text style={styles.text}>{label}</Text></Pressable>;
   return <View style={styles.card}>
-    <Text style={styles.title}>{applied ? 'Screenplay and scene plan' : flow.proposal ? mode === 'scene' ? 'Review your first scene' : 'Review your film plan' : 'Start your film here'}</Text>
-    <Text style={styles.text}>{mode === 'scene' ? 'Make the current scene, then plan the next scene when its shots are approved.' : 'Plan the whole story first, then make each scene from five-second shots.'}</Text>
-    {!flow.proposal && <View style={{ flexDirection: 'row', gap: 8 }}>{(['film', 'scene'] as const).map(value => <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: mode === value }} disabled={busy} onPress={() => { setMode(value); setSeconds(value === 'scene' ? '30' : '600'); setShowCustomLength(false); }} style={press([styles.modeChoice, mode === value && styles.lengthChoiceActive])}><Text style={styles.text}>{value === 'scene' ? 'Scene by scene' : 'Whole film'}</Text></Pressable>)}</View>}
-    <TextInput accessibilityLabel="Production brief" placeholder={mode === 'scene' ? 'Describe the first scene and its characters…' : 'Describe a 5–15 minute story, its characters, scene changes and ending…'} placeholderTextColor={theme.textWeak} multiline value={brief} onChangeText={setBrief} editable={!busy} style={[styles.input, { minHeight: 110 }]} />
-    <Text style={styles.text}>{mode === 'scene' ? 'First scene length' : 'Film length'}</Text>
+    <Text style={styles.title} translateText>{applied ? 'Screenplay and scene plan' : flow.proposal ? mode === 'scene' ? 'Review your first scene' : 'Review your film plan' : 'Start your film here'}</Text>
+    <Text style={styles.text} translateText>{mode === 'scene' ? 'Make the current scene, then plan the next scene when its shots are approved.' : 'Plan the whole story first, then make each scene from five-second shots.'}</Text>
+    {!flow.proposal && <View style={{ flexDirection: 'row', gap: 8 }}>{(['film', 'scene'] as const).map(value => <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: mode === value }} disabled={busy} onPress={() => { setMode(value); setSeconds(value === 'scene' ? '30' : '600'); setShowCustomLength(false); }} style={press([styles.modeChoice, mode === value && styles.lengthChoiceActive])}><Text style={styles.text} translateText>{value === 'scene' ? 'Scene by scene' : 'Whole film'}</Text></Pressable>)}</View>}
+    <TextInput accessibilityLabel="Production brief" translateAccessibilityLabel translatePlaceholder placeholder={mode === 'scene' ? 'Describe the first scene and its characters…' : 'Describe a 5–15 minute story, its characters, scene changes and ending…'} placeholderTextColor={theme.textWeak} multiline value={brief} onChangeText={setBrief} editable={!busy} style={[styles.input, { minHeight: 110 }]} />
+    <Text style={styles.text} translateText>{mode === 'scene' ? 'First scene length' : 'Film length'}</Text>
     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>{(mode === 'scene' ? [15, 30, 60] : [300, 600, 900]).map(value => <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: seconds === String(value) && !showCustomLength }} disabled={busy} onPress={() => { setSeconds(String(value)); setShowCustomLength(false); }} style={press([styles.lengthChoice, seconds === String(value) && !showCustomLength && styles.lengthChoiceActive])}><Text style={styles.text}>{mode === 'scene' ? value + ' sec' : value / 60 + ' min'}</Text></Pressable>)}
-      <Pressable accessibilityRole="button" onPress={() => setShowCustomLength(true)} style={press(styles.lengthChoice)}><Text style={styles.text}>Other</Text></Pressable></View>
-    {showCustomLength && <TextInput accessibilityLabel="Custom film length in seconds" placeholder={mode === 'scene' ? '5–180 seconds, in steps of 5' : '300–900 seconds, in steps of 5'} placeholderTextColor={theme.textWeak} value={seconds} onChangeText={setSeconds} keyboardType="number-pad" editable={!busy} style={styles.input} />}
-    <Pressable accessibilityRole="button" accessibilityState={{ expanded: showPlanOptions }} onPress={() => setShowPlanOptions(value => !value)} style={press(styles.lengthChoice)}><Text style={styles.text}>{showPlanOptions ? 'Hide' : 'Show'} language and writing model</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={() => setShowCustomLength(true)} style={press(styles.lengthChoice)}><Text style={styles.text} translateText>Other</Text></Pressable></View>
+    {showCustomLength && <TextInput accessibilityLabel="Custom film length in seconds" translateAccessibilityLabel translatePlaceholder placeholder={mode === 'scene' ? '5–180 seconds, in steps of 5' : '300–900 seconds, in steps of 5'} placeholderTextColor={theme.textWeak} value={seconds} onChangeText={setSeconds} keyboardType="number-pad" editable={!busy} style={styles.input} />}
+    <Pressable accessibilityRole="button" accessibilityState={{ expanded: showPlanOptions }} onPress={() => setShowPlanOptions(value => !value)} style={press(styles.lengthChoice)}><Text style={styles.text} translateText>{showPlanOptions ? 'Hide' : 'Show'} language and writing model</Text></Pressable>
     {(showPlanOptions || !connected[model?.providerId ?? '']) && <>
-      <Text style={styles.text}>Dialogue language</Text><TextInput accessibilityLabel="Dialogue language" value={language} onChangeText={setLanguage} editable={!busy} style={styles.input} />
+      <Text style={styles.text} translateText>Dialogue language</Text><TextInput accessibilityLabel="Dialogue language" value={language} onChangeText={setLanguage} editable={!busy} style={styles.input}  translateAccessibilityLabel/>
       <ModelSelect domain="writer" selectedId={modelId} connected={connected} onSelect={item => setModelId(item.id)} onConnectionChange={() => { void readProviderConnections().then(setConnected); }} />
     </>}
     {action(flow.busy ? 'Working…' : flow.proposal ? mode === 'scene' ? 'Regenerate first scene plan' : 'Revise screenplay and scene plan' : mode === 'scene' ? 'Plan first scene' : 'Create screenplay and scene plan', () => {
@@ -66,14 +68,14 @@ export function ProductionPlanComposer({ document, onSave, disabled, connections
         });
       } }]);
     }, busy || !valid || !model || !isDomainModelAvailableOnRuntime(model, 'mobile') || !connected[model.providerId])}
-    {!request.sourceText && <Text style={styles.text}>Start by writing a story brief. This step does not generate video.</Text>}
-    {!connected[model?.providerId ?? ''] && <Text style={styles.text}>Connect the selected writing provider in Settings to create a plan.</Text>}
+    {!request.sourceText && <Text style={styles.text} translateText>Start by writing a story brief. This step does not generate video.</Text>}
+    {!connected[model?.providerId ?? ''] && <Text style={styles.text} translateText>Connect the selected writing provider in Settings to create a plan.</Text>}
     {flow.proposal && <>
       {mode === 'scene' ? <><Text style={styles.title}>{sceneDraft?.scenes[0]?.title ?? 'Review first scene'}</Text><Text selectable style={styles.text}>{sceneDraft?.screenplay}</Text>{sceneDraft?.scenes[0]?.shots.map((shot, index) => <View key={index} style={{ borderTopWidth: 1, borderColor: theme.line, paddingTop: 8 }}><Text style={styles.text}>Shot {index + 1} · 5 sec</Text><Text selectable style={styles.text}>{shot.action}</Text></View>)}</> : <>
       <Text style={styles.text}>{WRITER_STAGES.map(stage => `${flow.proposal!.artifacts.some(item => item.stage === stage && item.approved) ? '✓' : checkpoint === stage ? '→' : '○'} ${WRITER_STAGE_LABELS[stage]}`).join('\n')}</Text>
       {flow.proposal.artifacts.map(artifact => <View key={artifact.stage}>{action(`${WRITER_STAGE_LABELS[artifact.stage]} · ${artifact.approved ? 'Approved' : 'Review required'}`, () => setExpanded(expanded === artifact.stage ? null : artifact.stage))}{expanded === artifact.stage && <><Text selectable style={styles.text}>{artifact.content}</Text><Text style={styles.text}>{WRITER_STAGE_CHECKLISTS[artifact.stage].join('\n')}</Text></>}</View>)}
       </>}
-      {!matches && <Text style={styles.text}>Brief changed. Generate a revised plan before approval.</Text>}
+      {!matches && <Text style={styles.text} translateText>Brief changed. Generate a revised plan before approval.</Text>}
       {flow.unsaved && action('Retry saving proposal', () => Alert.alert('Replace planning draft?', 'Save the retained proposal over the current draft?', [{ text: 'Cancel', style: 'cancel' }, { text: 'Save', onPress: () => { void flow.saveDraft(); } }]), busy)}
       {mode === 'scene' ? action(applied ? 'First scene approved' : 'Approve first scene plan', () => {
         Alert.alert('Approve first scene?', 'Save this scene and its five-second shots. Video generation asks for cost approval separately.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Approve scene', onPress: () => { void flow.approveAll(request); } }]);

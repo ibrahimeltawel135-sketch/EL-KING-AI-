@@ -1,6 +1,9 @@
 import type { ComponentType, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { Alert, AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, Modal, Pressable, StyleSheet, View } from 'react-native';
+
+import { LocaleProvider, useLocale } from './src/lib/locale';
+import { Alert, Text } from './src/components/AppText';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -76,17 +79,20 @@ type ExportState =
 
 export default function App() {
   return (
-    // Required by the gesture handler on Android: without it the timeline's
-    // gestures never reach the handler and the editor is back to guessing.
-    <GestureHandlerRootView style={styles.root}>
-      <SafeAreaProvider>
-        <Shell />
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <LocaleProvider>
+      {/* Required by Android timeline gestures. */}
+      <GestureHandlerRootView style={styles.root}>
+        <SafeAreaProvider>
+          <Shell />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </LocaleProvider>
   );
 }
 
 function Shell() {
+  const { locale } = useLocale();
+  const direction = locale === 'ar' ? 'rtl' : 'ltr';
   const insets = useSafeAreaInsets();
   const [route, setRoute] = useState<Route>({ name: 'projects' });
   const [preferredTab, setTab] = useState<ProjectTab>('edit');
@@ -173,14 +179,14 @@ function Shell() {
         try {
           const copied = createEditingCopy(project.id);
           setRoute({ name: 'project', projectId: copied.id }); setTab('edit'); setWorkspaceMode('edit'); setExportState({ kind: 'idle' });
-        } catch (error) { Alert.alert('Copy failed', String(error)); }
+        } catch (error) { Alert.alertWithRawMessage('Copy failed', String(error)); }
       } }
     ]);
   };
 
   if (route.name === 'projects') {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, { direction }]}>
         <StatusBar style="light" />
         <ProjectsScreen
           topInset={insets.top}
@@ -294,7 +300,7 @@ function Shell() {
   const canExport = isExportAvailable && pictureSeconds > 0 && exportState.kind !== 'running';
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { direction }]}>
       <StatusBar style="light" />
 
       <View style={[styles.bar, { paddingTop: insets.top + 8 }]}>
@@ -304,9 +310,9 @@ function Shell() {
           onPress={() => setRoute({ name: 'projects' })}
           style={press(styles.barButton)}
         >
-          <ChevronLeftIcon size={20} />
+          <View style={locale === 'ar' ? styles.rtlBackIcon : undefined}><ChevronLeftIcon size={20} /></View>
         </Pressable>
-        <Text style={styles.barTitle} numberOfLines={1}>{project?.name ?? 'Project'}</Text>
+        <Text style={styles.barTitle} numberOfLines={1} translateText={project === null}>{project?.name ?? 'Project'}</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Export video"
@@ -314,7 +320,7 @@ function Shell() {
           onPress={() => void runExport()}
           style={press([styles.export, !canExport && styles.exportOff])}
         >
-          <Text style={styles.exportText}>{exportState.kind === 'running' ? 'Exporting…' : 'Export'}</Text>
+          <Text style={styles.exportText} translateText>{exportState.kind === 'running' ? 'Exporting…' : 'Export'}</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -336,10 +342,8 @@ function Shell() {
         for the opposite, and the Video tab already does it for frame extraction.
       */}
       {!isExportAvailable && (
-        <Text style={styles.limit}>
-          Export needs a development build — Expo Go carries only the modules baked into it, and the renderer is this
-          project&apos;s own. Everything else on this screen works.
-        </Text>
+        <Text style={styles.limit} translateText>Export needs a development build — Expo Go carries only the modules baked into it, and the renderer is this
+          project&apos;s own. Everything else on this screen works.</Text>
       )}
 
       {/* A result the user can put away. It used to be a line of text that stayed
@@ -367,24 +371,24 @@ function Shell() {
                 ? `Saved to ${exportState.where}.`
                 : `Saved to ${exportState.where}, but it does not match the cut. ${exportState.wrong}`}
           </Text>
-          <Text style={styles.bannerDismiss}>Dismiss</Text>
+          <Text style={styles.bannerDismiss} translateText>Dismiss</Text>
         </Pressable>
       )}
 
-      <Text style={styles.workspaceIdentity}>OPENSCENE / {workspaceMode === 'edit' ? 'EDIT' : 'CREATE'} · {WORKSPACE_EXPERIENCES[workspaceMode].title}</Text>
+      <Text style={styles.workspaceIdentity} translateText>EL KING AI / {workspaceMode === 'edit' ? 'EDIT' : 'CREATE'} · {WORKSPACE_EXPERIENCES[workspaceMode].title}</Text>
       {project?.projectType === undefined && <View accessibilityRole="tablist" style={styles.modeBar}>
         {WORKSPACE_MODES.map((mode) => (
           <Pressable key={mode} accessibilityRole="tab"
             accessibilityState={{ selected: workspaceMode === mode }}
             onPress={() => selectTab(workspaceTabForMode(mode, lastCreationTool))}
             style={press([styles.modeButton, workspaceMode === mode && styles.modeButtonOn])}>
-            <Text style={[styles.modeLabel, workspaceMode === mode && styles.tabOn]}>{WORKSPACE_MODE_LABELS[mode]}</Text>
+            <Text style={[styles.modeLabel, workspaceMode === mode && styles.tabOn]} translateText>{WORKSPACE_MODE_LABELS[mode]}</Text>
           </Pressable>
         ))}
       </View>}
       {workspaceMode === 'create' && (
         <Pressable accessibilityRole="button" disabled={project === null || project.assets.length === 0} onPress={sendToEditing} style={press(styles.editorLink)}>
-          <Text style={styles.tabOn}>{project?.projectType === undefined ? 'Open in editor →' : 'Create editing project →'}</Text>
+          <Text style={styles.tabOn} translateText>{project?.projectType === undefined ? 'Open in editor →' : 'Create editing project →'}</Text>
         </Pressable>
       )}
       {workspaceMode === 'create' && isCreationTool(tab) && <CreationStageNav tool={tab} onSelect={selectTab} document={project?.ai} assets={project?.assets ?? []} />}
@@ -455,16 +459,17 @@ function RetainedScreen({ active, children }: { active: boolean; children: React
 }
 
 function SettingsModal({ open, onClose, topInset, bottomInset }: { open: boolean; onClose: () => void; topInset: number; bottomInset: number }) {
+  const { locale } = useLocale();
   return (
     <Modal visible={open} animationType="slide" onRequestClose={onClose}>
-      <View style={styles.root}>
+      <View style={[styles.root, { direction: locale === 'ar' ? 'rtl' : 'ltr' }]}>
         <SettingsScreen topInset={topInset} />
         {/* A footer bar, not a floating pill. The pill sat over the last provider
             card, so the one control the user could not reach was whichever one
             happened to be at the bottom of the list. */}
         <View style={[styles.doneBar, { paddingBottom: bottomInset + 12 }]}>
           <Pressable accessibilityRole="button" onPress={onClose} style={press(styles.done)}>
-            <Text style={styles.doneText}>Done</Text>
+            <Text style={styles.doneText} translateText>Done</Text>
           </Pressable>
         </View>
       </View>
@@ -481,6 +486,7 @@ const styles = StyleSheet.create({
   editorLink: { minHeight: MIN_TAP, justifyContent: 'center', alignItems: 'flex-end', paddingHorizontal: 16 },
   root: { flex: 1, backgroundColor: theme.bg },
   bar: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: theme.line },
+  rtlBackIcon: { transform: [{ scaleX: -1 }] },
   barButton: { width: MIN_TAP, height: MIN_TAP, alignItems: 'center', justifyContent: 'center' },
   barTitle: { flex: 1, color: theme.text, fontSize: 17, fontWeight: '700' },
   export: { minHeight: MIN_TAP, justifyContent: 'center', paddingHorizontal: 16, borderRadius: 10, backgroundColor: theme.accent },

@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from './AppText';
 import { CREATION_STAGES, SCENE_TOOLS, creationStageForTool, creationStudioStatus } from '@openvideo/shared/creationStudio';
 import type { CreationTool } from '@openvideo/shared/workspaceModes';
 import type { AiProjectDocument } from '@openvideo/shared/aiProjectDomain';
@@ -9,7 +10,7 @@ import { MIN_TAP, press } from '../lib/touch';
 export function CreationStageNav({ tool, onSelect, document, assets }: { tool: CreationTool; onSelect: (tool: CreationTool) => void; document: AiProjectDocument | null | undefined; assets: readonly ProductionEditorAsset[] }) {
   const stage = creationStageForTool(tool);
   return <View style={styles.container}>
-    <Text style={styles.title}>Production studio</Text>
+    <Text style={styles.title} translateText>Production studio</Text>
     <View style={styles.row}>{CREATION_STAGES.map(entry => <Pressable key={entry.id} accessibilityRole="button" accessibilityState={{ selected: stage.id === entry.id }}
       style={press([styles.button, stage.id === entry.id && styles.selected])} onPress={() => onSelect(stage.id === entry.id ? tool : entry.tool)}><Text style={styles.text}>{entry.label}</Text></Pressable>)}</View>
     {stage.id === 'scenes' && <View style={styles.row}>{SCENE_TOOLS.map(entry => <Pressable key={entry.id} accessibilityRole="button" accessibilityState={{ selected: tool === entry.id }}

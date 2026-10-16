@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from './AppText';
 
 import { KeyboardAwareScroll } from './KeyboardAwareScroll';
 
@@ -112,19 +113,17 @@ export function ModelSelect({
         <KeyboardAvoidingView style={styles.scrim} behavior="padding">
           <View style={styles.sheet}>
             <View style={styles.sheetHead}>
-              <Text style={styles.sheetTitle}>{sheet === 'add' ? 'Add a provider' : 'Choose a model'}</Text>
+            <Text style={styles.sheetTitle} translateText>{sheet === 'add' ? 'Add a provider' : 'Choose a model'}</Text>
               <Pressable accessibilityRole="button" onPress={() => setSheet(null)} style={press(styles.close)}>
-                <Text style={styles.closeText}>Done</Text>
+                <Text style={styles.closeText} translateText>Done</Text>
               </Pressable>
             </View>
 
             <KeyboardAwareScroll contentContainerStyle={styles.sheetBody} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
               {sheet === 'add' ? (
                 <>
-                  <Text style={styles.sheetBlurb}>
-                    Connecting a provider makes its models selectable. Keys are held in the device keystore and never
-                    read back for display.
-                  </Text>
+                  <Text style={styles.sheetBlurb} translateText>Connecting a provider makes its models selectable. Keys are held in the device keystore and never
+                    read back for display.</Text>
                   {providers.map((provider) => (
                     <ProviderConnect
                       key={provider.slot}
@@ -142,7 +141,7 @@ export function ModelSelect({
                   <View key={providerId} style={styles.group}>
                     <View style={styles.groupHead}>
                       <Text style={styles.groupTitle}>{group[0]?.providerLabel ?? providerId}</Text>
-                      <Text style={[styles.groupBadge, group[0]?.executionPath === 'local' || connected[providerId] === true ? styles.on : styles.off]}>
+                      <Text style={[styles.groupBadge, group[0]?.executionPath === 'local' || connected[providerId] === true ? styles.on : styles.off]} translateText>
                         {group[0]?.executionPath === 'local' ? 'local' : connected[providerId] === true ? 'connected' : 'no key'}
                       </Text>
                     </View>

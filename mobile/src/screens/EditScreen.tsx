@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, PanResponder, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../components/AppText';
 import { Gesture, GestureDetector, ScrollView as GestureScrollView } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -521,7 +522,7 @@ export function EditScreen({
           hitSlop={SMALL_SLOP}
           style={press(styles.small)}
         >
-          <Text style={styles.smallText}>−</Text>
+          <Text style={styles.smallText} translateText>−</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -537,7 +538,7 @@ export function EditScreen({
           hitSlop={SMALL_SLOP}
           style={press(styles.small)}
         >
-          <Text style={styles.smallText}>⤢</Text>
+          <Text style={styles.smallText} translateText>⤢</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -546,7 +547,7 @@ export function EditScreen({
           hitSlop={SMALL_SLOP}
           style={press(styles.small)}
         >
-          <Text style={styles.smallText}>+</Text>
+          <Text style={styles.smallText} translateText>+</Text>
         </Pressable>
       </View>
 
@@ -607,7 +608,7 @@ export function EditScreen({
         <Tool label="More" onPress={() => setMoreOpen((open) => !open)} />
       </ScrollView>
 
-      {editor.message !== null && <Text style={styles.message}>{editor.message}</Text>}
+      {editor.message !== null && <Text style={styles.message} translateText>{editor.message}</Text>}
 
       {mediaOpen && projectId !== null && (
         <MediaLibrary
@@ -681,7 +682,7 @@ export function EditScreen({
           onScroll={(event) => {
             scrollX.current = event.nativeEvent.contentOffset.x;
           }}
-          contentContainerStyle={{ width: timelineWidth }}
+          contentContainerStyle={{ width: timelineWidth, direction: 'ltr' }}
         >
           <View style={styles.lanes} {...zoomResponder.panHandlers}>
             {/* Scrubbing lives on the ruler because a timeline whose lanes are
@@ -746,12 +747,10 @@ export function EditScreen({
         </GestureDetector>
 
         {projectId === null ? (
-          <Text style={styles.empty}>Open a project from the Projects tab to start editing.</Text>
+          <Text style={styles.empty} translateText>Open a project from the Projects tab to start editing.</Text>
         ) : (
           editor.timeline.tracks.every((track) => track.clips.length === 0) && (
-            <Text style={styles.empty}>
-              Import a clip, or generate one under Video. Drag a clip to move it; drag its ends—or long-press and drag—to change its length.
-            </Text>
+            <Text style={styles.empty} translateText>Import a clip, or generate one under Video. Drag a clip to move it; drag its ends—or long-press and drag—to change its length.</Text>
           )
         )}
       </ScrollView>
@@ -786,12 +785,12 @@ export function EditScreen({
       */}
       {moreOpen && (
         <View style={styles.trackSheet}>
-          <Text style={styles.inspectorTitle}>More</Text>
+          <Text style={styles.inspectorTitle} translateText>More</Text>
           <Pressable accessibilityRole="button" disabled={!editor.canUndo} onPress={editor.undo} style={press(styles.sheetRow)}>
-            <Text style={[styles.sheetRowText, !editor.canUndo && styles.sheetDisabled]}>Undo</Text>
+            <Text style={[styles.sheetRowText, !editor.canUndo && styles.sheetDisabled]} translateText>Undo</Text>
           </Pressable>
           <Pressable accessibilityRole="button" disabled={!editor.canRedo} onPress={editor.redo} style={press(styles.sheetRow)}>
-            <Text style={[styles.sheetRowText, !editor.canRedo && styles.sheetDisabled]}>Redo</Text>
+            <Text style={[styles.sheetRowText, !editor.canRedo && styles.sheetDisabled]} translateText>Redo</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -802,13 +801,13 @@ export function EditScreen({
             }}
             style={press(styles.sheetRow)}
           >
-            <Text style={[styles.sheetRowText, projectId === null && styles.sheetDisabled]}>Media bin</Text>
+            <Text style={[styles.sheetRowText, projectId === null && styles.sheetDisabled]} translateText>Media bin</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={() => editor.addTrack('video')} style={press(styles.sheetRow)}>
-            <Text style={styles.sheetRowText}>Add a video track</Text>
+            <Text style={styles.sheetRowText} translateText>Add a video track</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={() => editor.addTrack('audio')} style={press(styles.sheetRow)}>
-            <Text style={styles.sheetRowText}>Add an audio track</Text>
+            <Text style={styles.sheetRowText} translateText>Add an audio track</Text>
           </Pressable>
           {/*
             The shape the export comes out.
@@ -832,15 +831,15 @@ export function EditScreen({
             writeProject({ ...current, subtitleDelivery: { burnAutomaticCaptions: next, sidecarFormat: 'none' } });
             setBurnAutomaticCaptions(next);
           }} style={press(styles.sheetRow)}>
-            <Text style={styles.sheetRowText}>Automatic captions: {burnAutomaticCaptions ? 'burn into video' : 'do not burn'}</Text>
+            <Text style={styles.sheetRowText} translateText>Automatic captions: {burnAutomaticCaptions ? 'burn into video' : 'do not burn'}</Text>
           </Pressable>
-          <Text style={styles.panelNote}>SRT, VTT and ASS sidecar files are currently desktop-only.</Text>
+          <Text style={styles.panelNote} translateText>SRT, VTT and ASS sidecar files are currently desktop-only.</Text>
           <Pressable accessibilityRole="button" disabled style={press(styles.sheetRow)}>
-            <Text style={[styles.sheetRowText, styles.sheetDisabled]}>Metadata privacy and provenance: desktop-only</Text>
+            <Text style={[styles.sheetRowText, styles.sheetDisabled]} translateText>Metadata privacy and provenance: desktop-only</Text>
           </Pressable>
           <Text style={styles.panelNote}>Mobile does not claim to sanitize or verify metadata, or write provenance.json. Finish this delivery in the desktop app. {DESKTOP_PRIVACY_CLEAN_SUMMARY}</Text>
           <Pressable accessibilityRole="button" onPress={() => setMoreOpen(false)} style={press(styles.sheetRow)}>
-            <Text style={styles.sheetRowText}>Close</Text>
+            <Text style={styles.sheetRowText} translateText>Close</Text>
           </Pressable>
         </View>
       )}
@@ -859,7 +858,7 @@ export function EditScreen({
                     onPress={() => editor.setTrackMuted(track.id, !track.mix.muted)}
                     style={press(styles.sheetRow)}
                   >
-                    <Text style={styles.sheetRowText}>{track.mix.muted ? 'Unmute this track' : 'Mute this track'}</Text>
+                    <Text style={styles.sheetRowText} translateText>{track.mix.muted ? 'Unmute this track' : 'Mute this track'}</Text>
                   </Pressable>
                 )}
                 <Pressable
@@ -870,10 +869,10 @@ export function EditScreen({
                   }}
                   style={press(styles.sheetRow)}
                 >
-                  <Text style={[styles.sheetRowText, styles.sheetDanger]}>Remove this track</Text>
+                  <Text style={[styles.sheetRowText, styles.sheetDanger]} translateText>Remove this track</Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={() => setTrackSheet(null)} style={press(styles.sheetRow)}>
-                  <Text style={styles.sheetRowText}>Close</Text>
+                  <Text style={styles.sheetRowText} translateText>Close</Text>
                 </Pressable>
               </>
             );
@@ -909,7 +908,7 @@ export function EditScreen({
           contentContainerStyle={styles.inspectorContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.inspectorTitle}>Selected clip</Text>
+          <Text style={styles.inspectorTitle} translateText>Selected clip</Text>
           <Stepper
             label="Opacity"
             value={`${Math.round(selected.clip.effects.opacity * 100)}%`}
@@ -1039,7 +1038,7 @@ export function EditScreen({
             nothing of saturation would be a preview that disagrees with the
             file — which is the failure this editor keeps being caught by.
           */}
-          <Text style={styles.panelNote}>Colour applies to the export. The preview does not show it yet.</Text>
+          <Text style={styles.panelNote} translateText>Colour applies to the export. The preview does not show it yet.</Text>
           <Stepper
             label="Volume"
             value={`${Math.round(selected.clip.effects.volume * 100)}%`}
@@ -1047,9 +1046,7 @@ export function EditScreen({
             onUp={() => editor.setSelectedEffects({ volume: Math.min(2, selected.clip.effects.volume + 0.1) })}
           />
           {selectedAsset?.kind === 'video' && (
-            <Text style={styles.panelNote}>
-              Detach audio is currently desktop-only. Mobile keeps the video's embedded sound during preview and export.
-            </Text>
+            <Text style={styles.panelNote} translateText>Detach audio is currently desktop-only. Mobile keeps the video's embedded sound during preview and export.</Text>
           )}
         </ScrollView>
       )}
@@ -1089,7 +1086,7 @@ function TransitionPanel({
       <View style={styles.panelHeader}>
         <Text style={styles.inspectorTitle}>Transition at {formatMs(cutMs)}</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Close the transition panel" onPress={onClose} hitSlop={SMALL_SLOP}>
-          <Text style={styles.smallText}>×</Text>
+          <Text style={styles.smallText} translateText>×</Text>
         </Pressable>
       </View>
 
@@ -1110,7 +1107,7 @@ function TransitionPanel({
       </View>
 
       {transition === null ? (
-        <Text style={styles.panelNote}>No transition here yet. Pick one and it lands on this cut.</Text>
+        <Text style={styles.panelNote} translateText>No transition here yet. Pick one and it lands on this cut.</Text>
       ) : (
         <>
           <Stepper
@@ -1120,7 +1117,7 @@ function TransitionPanel({
             onUp={() => onSet(transition.type, transition.durationMs + 100)}
           />
           <Pressable accessibilityRole="button" onPress={onRemove} style={press([styles.tool, styles.toolDanger])}>
-            <Text style={[styles.toolText, styles.toolDangerText]}>Remove transition</Text>
+            <Text style={[styles.toolText, styles.toolDangerText]} translateText>Remove transition</Text>
           </Pressable>
         </>
       )}
@@ -1164,9 +1161,9 @@ function TitlePanel({
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.titleHeader}>
-        <Text style={styles.inspectorTitle}>Title</Text>
+        <Text style={styles.inspectorTitle} translateText>Title</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Close the title panel" onPress={onClose} hitSlop={SMALL_SLOP}>
-          <Text style={styles.smallText}>×</Text>
+          <Text style={styles.smallText} translateText>×</Text>
         </Pressable>
       </View>
       <TextInput
@@ -1176,7 +1173,7 @@ function TitlePanel({
         placeholder="Title"
         placeholderTextColor={theme.textWeaker}
         onChangeText={(text) => onChange({ text })}
-      />
+       translatePlaceholder translateAccessibilityLabel/>
       <View style={styles.swatchRow}>
         {TITLE_COLORS.map((color) => (
           <Pressable
@@ -1188,7 +1185,7 @@ function TitlePanel({
           />
         ))}
       </View>
-      <Text style={styles.panelNote}>Style preset</Text>
+      <Text style={styles.panelNote} translateText>Style preset</Text>
       <View style={styles.captionChoiceRow}>
         {CAPTION_STYLE_PRESETS.map((preset) => (
           <Pressable key={preset.id} accessibilityRole="button" accessibilityLabel={`Apply ${preset.label} caption preset`}
@@ -1200,7 +1197,7 @@ function TitlePanel({
           </Pressable>
         ))}
       </View>
-      <Text style={styles.panelNote}>Title-safe anchor</Text>
+      <Text style={styles.panelNote} translateText>Title-safe anchor</Text>
       <View style={styles.captionChoiceRow}>
         {CAPTION_PLACEMENTS.map((placement) => (
           <Pressable key={placement} accessibilityRole="button" accessibilityState={{ selected: titleStyle.placement === placement }}
@@ -1213,7 +1210,7 @@ function TitlePanel({
       <Pressable accessibilityRole="button" accessibilityState={{ selected: titleStyle.fontWeight === 'bold' }}
         onPress={() => onChange({ style: { ...titleStyle, fontWeight: titleStyle.fontWeight === 'bold' ? 'regular' : 'bold' } })}
         style={press([styles.tool, titleStyle.fontWeight === 'bold' && styles.captionChoiceOn])}>
-        <Text style={styles.toolText}>Bold: {titleStyle.fontWeight === 'bold' ? 'on' : 'off'}</Text>
+        <Text style={styles.toolText} translateText>Bold: {titleStyle.fontWeight === 'bold' ? 'on' : 'off'}</Text>
       </Pressable>
       <Stepper
         label="Size"
@@ -1250,11 +1247,11 @@ function TitlePanel({
         onUp={() => onChange({ style: { ...titleStyle, paddingPx: Math.min(64, titleStyle.paddingPx + 2) } })} />
       <Pressable accessibilityRole="button" disabled={automaticCaptionCount === 0} onPress={onApplyAutomatic}
         style={press([styles.tool, automaticCaptionCount === 0 && styles.toolOff])}>
-        <Text style={styles.toolText}>Apply appearance to {automaticCaptionCount} automatic caption{automaticCaptionCount === 1 ? '' : 's'}</Text>
+        <Text style={styles.toolText} translateText>{`Apply appearance to ${automaticCaptionCount} automatic caption${automaticCaptionCount === 1 ? '' : 's'}`}</Text>
       </Pressable>
-      <Text style={styles.panelNote}>Safe anchors adapt to landscape, portrait and square exports. X/Y remain fine-tuning offsets.</Text>
+      <Text style={styles.panelNote} translateText>Safe anchors adapt to landscape, portrait and square exports. X/Y remain fine-tuning offsets.</Text>
       <Pressable accessibilityRole="button" onPress={onRemove} style={press([styles.tool, styles.toolDanger])}>
-        <Text style={[styles.toolText, styles.toolDangerText]}>Remove title</Text>
+        <Text style={[styles.toolText, styles.toolDangerText]} translateText>Remove title</Text>
       </Pressable>
     </ScrollView>
   );
@@ -1287,7 +1284,7 @@ function Stepper({
         hitSlop={STEPPER_SLOP}
         style={press(styles.stepperButton)}
       >
-        <Text style={styles.stepperButtonText}>−</Text>
+        <Text style={styles.stepperButtonText} translateText>−</Text>
       </Pressable>
       <Text style={styles.stepperValue}>{value}</Text>
       <Pressable
@@ -1299,7 +1296,7 @@ function Stepper({
         hitSlop={STEPPER_SLOP}
         style={press(styles.stepperButton)}
       >
-        <Text style={styles.stepperButtonText}>+</Text>
+        <Text style={styles.stepperButtonText} translateText>+</Text>
       </Pressable>
 
     </View>
@@ -1396,7 +1393,7 @@ const styles = StyleSheet.create({
   swatchRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   captionChoiceRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   captionChoice: { borderWidth: 1, borderColor: theme.line, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, backgroundColor: theme.surface },
-  captionChoiceOn: { borderColor: theme.accent, backgroundColor: '#2a2340' },
+  captionChoiceOn: { borderColor: theme.accent, backgroundColor: `${theme.accent}22` },
   captionChoiceText: { color: theme.text, fontSize: 12, textTransform: 'capitalize' },
   swatch: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: theme.line },
   swatchOn: { borderWidth: 3, borderColor: theme.text },
@@ -1409,13 +1406,13 @@ const styles = StyleSheet.create({
   // Headers beside the lanes, not inside them: the row is the two columns.
   // `flexGrow` rather than `flex`, so the row still measures its own height
   // inside a vertical scroller while filling the width.
-  timelineRow: { flexDirection: 'row', flexGrow: 1, paddingBottom: 8 },
+  timelineRow: { flexDirection: 'row', flexGrow: 1, paddingBottom: 8, direction: 'ltr' },
   // Fixed beside a lane column that takes whatever is left. Without the explicit
   // pair, a zoomed timeline makes the scroller size to its content and pushes
   // the headers off the row entirely.
   railColumn: { width: RAIL, flexShrink: 0, borderRightWidth: 1, borderRightColor: theme.line },
-  laneScroller: { flex: 1 },
-  lanes: { position: 'relative' },
+  laneScroller: { flex: 1, direction: 'ltr' },
+  lanes: { position: 'relative', direction: 'ltr' },
   rulerRail: { height: RULER_HEIGHT, borderBottomWidth: 1, borderBottomColor: theme.line },
   rulerLane: { height: RULER_HEIGHT },
   rail: { alignItems: 'center', justifyContent: 'center', gap: 2, borderBottomWidth: 1, borderBottomColor: theme.line },
